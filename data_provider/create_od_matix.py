@@ -8,9 +8,7 @@ from utils.dataset_utils import get_normalized_adj
 
 def create_od_matrix(dataset_directory, args):
     df = pd.read_csv(dataset_directory + "df_grouped_" + args.tile_size + "_" + args.sample_time + ".csv")
-    tessellation = pd.read_csv(
-        dataset_directory + "Tessellation_" + args.tile_size + "_" + args.city + "_" + args.data_type + ".csv"
-    )
+    tessellation = pd.read_csv(dataset_directory + "Tessellation_" + args.tile_size + "_" + args.city + ".csv")
 
     minites = {"60min": 60, "45min": 45, "30min": 30, "15min": 15}
     minite = minites[args.sample_time]
