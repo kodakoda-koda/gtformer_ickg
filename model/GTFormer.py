@@ -18,6 +18,7 @@ class Model(nn.Module):
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.args = args
+        self.layers = args.layers
 
         # Temporal Transformer Block
         self.temporal_embedding = TokenEmbedding_temporal(args.num_tiles**2, args.d_model)
