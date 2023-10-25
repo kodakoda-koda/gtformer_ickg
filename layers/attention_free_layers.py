@@ -18,7 +18,7 @@ class AFTFull(nn.Module):
         self.save_outputs = save_outputs
         nn.init.xavier_uniform_(self.wbias)
 
-    def forward(self, x):
+    def forward(self, x, _):
         B, T, _ = x.shape
         H = self.n_head
 
@@ -51,7 +51,7 @@ class AFTSimple(nn.Module):
         self.out_projection = nn.Linear(d_model, d_model)
         self.save_outputs = save_outputs
 
-    def forward(self, x):
+    def forward(self, x, _):
         B, T, _ = x.shape
         H = self.n_head
 

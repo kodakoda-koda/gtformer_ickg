@@ -40,9 +40,9 @@ def main():
     parser.add_argument("--n_head", type=int, default=8)
     parser.add_argument("--temporal_num_layers", type=int, default=2)
     parser.add_argument("--spatial_num_layers", type=int, default=1)
-    parser.add_argument("--Temporal_mode", type=bool, default="BRPE", help='["BRPE", "None"]')
-    parser.add_argument("--spatial_mode", type=bool, default="AFT", help='["AFT", "KVR", "None"]')
-    parser.add_argument("--use_only", type=bool, default="None", help='["Spatial", "Temporal", "None"]')
+    parser.add_argument("--Temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
+    parser.add_argument("--spatial_mode", type=str, default="AFT", help='["AFT", "KVR", "None"]')
+    parser.add_argument("--use_only", type=str, default="None", help='["Spatial", "Temporal", "None"]')
 
     # CrowdNet config
     parser.add_argument("--d_temporal", type=int, default=64)
