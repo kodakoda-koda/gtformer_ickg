@@ -78,9 +78,11 @@ class Model(nn.Module):
             spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
             spat_out = self.spatial_linear(spat_out)
 
-            X = temp_out.reshape(B, L + 1, O, D) + spat_out.permute(0, 2, 1).reshape(B, L + 1, O, D)
+            X = temp_out + spat_out.permute(0, 2, 1)
+
+        out = X.reshape(B, L + 1, O, D)
 
         if self.args.save_outputs:
-            return X[:, -1:, :, :], A_temporal, A_spatial
+            return out[:, -1:, :, :], A_temporal, A_spatial
         else:
-            return X[:, -1:, :, :]
+            return out[:, -1:, :, :]
