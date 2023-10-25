@@ -115,7 +115,7 @@ def load_dataset(city, data_type, tile_size, sample_time, dataset_directory):
 
     print("load tessellation")
     # Load tile information
-    tessellation = pd.read_csv(dataset_directory + "Tessellation_" + tile_size + "_" + city + "_" + data_type + ".csv")
+    tessellation = pd.read_csv(dataset_directory + "Tessellation_" + tile_size + "_" + city + ".csv")
     tessellation["geometry"] = [shapely.wkt.loads(el) for el in tessellation.geometry]
     tessellation = gpd.GeoDataFrame(tessellation, geometry="geometry")
 

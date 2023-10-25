@@ -28,8 +28,6 @@ def get_matrix_mapping(args):
         + args.tile_size
         + "_"
         + args.city
-        + "_"
-        + args.data_type
         + ".csv"
     )
     tessellation["geometry"] = [shapely.wkt.loads(el) for el in tessellation.geometry]
