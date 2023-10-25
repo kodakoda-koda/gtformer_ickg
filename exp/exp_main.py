@@ -115,7 +115,8 @@ class Exp_Main(Exp_Basic):
         return total_loss
 
     def test(self, itr):
-        od_matrix, min_tile_id, empty_indices, param = create_od_matrix(self.args)
+        dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
+        od_matrix, min_tile_id, empty_indices, param = create_od_matrix(dataset_directory, self.args)
         test_loader = data_provider("test", self.args, od_matrix)
         if self.args.model == "CrowdNet":
             param = torch.tensor(param).float().to(self.device)
