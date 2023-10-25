@@ -11,7 +11,7 @@ from data_provider.data_loader import data_provider
 from exp.exp_basic import Exp_Basic
 from model import CrowdNet, GTFormer
 from utils.dataset_utils import get_matrix_mapping, restore_od_matrix, to_2D_map
-from utils.exp_utils import EarlyStopping, mean_absolute_percentage_error
+from utils.exp_utils import EarlyStopping
 
 
 class Exp_Main(Exp_Basic):
@@ -162,12 +162,10 @@ class Exp_Main(Exp_Basic):
         # Error of OD flow
         od_rmse_test = np.sqrt(mean_squared_error(trues.flatten().reshape(-1, 1), preds.flatten().reshape(-1, 1)))
         od_mae_test = mean_absolute_error(trues.flatten().reshape(-1, 1), preds.flatten().reshape(-1, 1))
-        od_mape_test = mean_absolute_percentage_error(trues.flatten().reshape(-1, 1), preds.flatten().reshape(-1, 1))
 
         print("OD flow Prediction")
         print("RMSE Error test: ", od_rmse_test)
         print("MAE Error test: ", od_mae_test)
-        print("MAPE Error test: ", od_mape_test)
 
         # Restore ODmatrirx
         matrix_mapping, x_max, y_max = get_matrix_mapping(self.args)
@@ -182,14 +180,10 @@ class Exp_Main(Exp_Basic):
             mean_squared_error(trues_map.flatten().reshape(-1, 1), preds_map.flatten().reshape(-1, 1))
         )
         io_mae_test = mean_absolute_error(trues_map.flatten().reshape(-1, 1), preds_map.flatten().reshape(-1, 1))
-        io_mape_test = mean_absolute_percentage_error(
-            trues_map.flatten().reshape(-1, 1), preds_map.flatten().reshape(-1, 1)
-        )
 
         print("In-Out Flow Prediction")
         print("RMSE Error test: ", io_rmse_test)
         print("MAE Error test: ", io_mae_test)
-        print("MAPE Error test: ", io_mape_test)
 
         # Write results
         save_path = os.path.join(
@@ -199,8 +193,8 @@ class Exp_Main(Exp_Basic):
             os.makedirs(save_path)
         f = open(save_path + "/result.txt", "a")
         f.write("itr:{} \n".format(itr + 1))
-        f.write("OD flow prediction:   rmse:{}, mae:{}, mape:{} \n".format(od_rmse_test, od_mae_test, od_mape_test))
-        f.write("IO flow prediction:   rmse:{}, mae:{}, mape:{} \n".format(io_rmse_test, io_mae_test, io_mape_test))
+        f.write("OD flow prediction:   rmse:{}, mae:{} \n".format(od_rmse_test, od_mae_test))
+        f.write("IO flow prediction:   rmse:{}, mae:{} \n".format(io_rmse_test, io_mae_test))
         f.write("\n")
         f.write("\n")
         f.close()
