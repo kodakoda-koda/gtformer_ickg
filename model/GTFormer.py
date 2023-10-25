@@ -33,7 +33,6 @@ class Model(nn.Module):
             EncoderLayer(
                 attention=temporal_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
-            for _ in range(args.temporal_num_layers)
         ]
 
         temporal_norm = nn.LayerNorm(args.d_model)
@@ -54,7 +53,6 @@ class Model(nn.Module):
             EncoderLayer(
                 attention=spatial_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
-            for _ in range(args.spatial_num_layers)
         ]
 
         spatial_norm = nn.LayerNorm(args.d_model)
