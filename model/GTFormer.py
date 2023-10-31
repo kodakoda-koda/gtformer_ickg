@@ -34,6 +34,7 @@ class Model(nn.Module):
             EncoderLayer(
                 attention=temporal_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
+            for _ in range(args.num_temporal_layers)
         ]
 
         temporal_norm = nn.LayerNorm(args.d_model)
@@ -54,6 +55,7 @@ class Model(nn.Module):
             EncoderLayer(
                 attention=spatial_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
+            for _ in range(args.num_spatial_layers)
         ]
 
         spatial_norm = nn.LayerNorm(args.d_model)
@@ -69,7 +71,7 @@ class Model(nn.Module):
 
         X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).reshape(B, L + 1, O * D)
 
-        for _ in range(self.layers):
+        for _ in range(self.num_blocks):
             temp_in = self.temporal_embedding(X)
             temp_out, A_temporal = self.temporal_transformer_encoder(temp_in, key_indices)
             temp_out = self.temporal_linear(temp_out)

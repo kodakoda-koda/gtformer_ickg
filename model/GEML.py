@@ -10,15 +10,17 @@ class Model(nn.Module):
         super(Model, self).__init__()
 
         self.spatLayer = Grid_Embedding(args.num_tiles, args.d_model)
-
         self.tempLayer = nn.LSTM(input_size=args.d_model * 2, hidden_size=args.d_model)
         self.bn = nn.BatchNorm1d(num_features=args.d_model)
-
         self.linear = nn.Linear(in_features=args.d_model, out_features=args.d_model, bias=True)
 
         self.d_model = args.d_model
 
     def forward(self, X, dis_matrix):
+        # B: batch size
+        # L: sequence length
+        # O: num origin
+        # D: num destination
         B, L, O, D = X.shape
         spat_out = self.spatLayer(X, dis_matrix)
         temp_out = self.tempLayer(spat_out)
