@@ -1,8 +1,4 @@
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
-
-from layers.geml_layers import Grid_Embedding
 
 
 class Model(nn.Module):
