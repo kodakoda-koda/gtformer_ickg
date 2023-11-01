@@ -12,7 +12,7 @@ class Model(nn.Module):
         self.args = args
         self.num_blocks = args.num_blocks
 
-        self.blocks = nn.Modulelist([GTFormer_block(args) for _ in range(args.num_blocks)])
+        self.blocks = nn.ModuleList([GTFormer_block(args) for _ in range(args.num_blocks)])
 
         self.out_linear = nn.Linear(args.num_tiles**2, args.num_tiles**2)
 
