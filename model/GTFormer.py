@@ -23,7 +23,7 @@ class Model(nn.Module):
         # Temporal Transformer Block
         self.temporal_embedding = TokenEmbedding_temporal(args.num_tiles**2, args.d_model)
 
-        if args.Temporal_mode == "BRPE":
+        if args.temporal_mode == "BRPE":
             temporal_selfattention = Relative_Temporal_SelfAttention(
                 args.d_model, args.n_head, args.seq_len + 1, args.save_outputs
             )

@@ -23,7 +23,7 @@ def main():
     parser.add_argument("--sample_time", type=str, default="60min", help="sample time")
     parser.add_argument("--tile_size", type=str, default="1000m", help="tile size")
 
-    parser.add_argument("--itrs", type=int, default=10, help="number of run")
+    parser.add_argument("--itrs", type=int, default=1, help="number of run")
     parser.add_argument("--train_epochs", type=int, default=50, help="epochs")
     parser.add_argument("--patience", type=int, default=5, help="patience of early stopping")
     parser.add_argument("--batch_size", type=int, default=16, help="batch size")
@@ -41,7 +41,7 @@ def main():
     parser.add_argument("--temporal_num_layers", type=int, default=2)
     parser.add_argument("--spatial_num_layers", type=int, default=1)
     parser.add_argument("--num_blocks", type=int, default=2)
-    parser.add_argument("--Temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
+    parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
     parser.add_argument("--spatial_mode", type=str, default="AFT", help='["AFT", "KVR", "None"]')
 
     # CrowdNet config
@@ -57,7 +57,11 @@ def main():
         load_dataset(args.city, args.data_type, args.tile_size, args.sample_time, dataset_directory)
 
     print("Args in experiment:")
-    print(args)
+    print(
+        f"city: {args.city}, data type: {args.data_type}, sample time: {args.sample_time}, tile size: {args.tile_size}, num tiles: {args.num_tiles}"
+    )
+    if args.model == "GTFormer":
+        print(f"num_blocks: {args.num_blocks}, temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}")
 
     Exp = Exp_Main
 
