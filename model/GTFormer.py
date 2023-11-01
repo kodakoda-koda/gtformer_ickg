@@ -29,7 +29,7 @@ class Model(nn.Module):
             X, A_temporal, A_spatial = block(X, key_indices)
 
         out = self.out_linear(X)
-        out = X.view(B, L + 1, O, D)
+        out = out.view(B, L + 1, O, D)
 
         if self.args.save_outputs:
             return out[:, -1:, :, :], A_temporal, A_spatial
