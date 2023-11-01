@@ -84,5 +84,7 @@ def create_od_matrix(dataset_directory, args):
         return od_matrix, min_tile_id, empty_indices, key_indices
     elif args.model == "CrowdNet":
         return od_matrix, min_tile_id, empty_indices, A_hat
-    else:
+    elif args.model == "GEML":
         return od_matrix, min_tile_id, empty_indices, dis_matrix
+    else:
+        return od_matrix, min_tile_id, empty_indices, None

@@ -18,7 +18,7 @@ class Model(nn.Module):
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.args = args
-        self.layers = args.layers
+        self.num_blocks = args.num_blocks
 
         # Temporal Transformer Block
         self.temporal_embedding = TokenEmbedding_temporal(args.num_tiles**2, args.d_model)
@@ -34,7 +34,7 @@ class Model(nn.Module):
             EncoderLayer(
                 attention=temporal_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
-            for _ in range(args.num_temporal_layers)
+            for _ in range(args.temporal_num_layers)
         ]
 
         temporal_norm = nn.LayerNorm(args.d_model)
@@ -55,7 +55,7 @@ class Model(nn.Module):
             EncoderLayer(
                 attention=spatial_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
-            for _ in range(args.num_spatial_layers)
+            for _ in range(args.spatial_num_layers)
         ]
 
         spatial_norm = nn.LayerNorm(args.d_model)

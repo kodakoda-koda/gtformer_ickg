@@ -9,7 +9,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from data_provider.create_od_matix import create_od_matrix
 from data_provider.data_loader import data_provider
 from exp.exp_basic import Exp_Basic
-from model import CrowdNet, GTFormer
+from model import GEML, LSTM, CrowdNet, GTFormer
 from utils.dataset_utils import get_matrix_mapping, restore_od_matrix, to_2D_map
 from utils.exp_utils import EarlyStopping
 
@@ -22,6 +22,8 @@ class Exp_Main(Exp_Basic):
         model_dict = {
             "GTFormer": GTFormer,
             "CrowdNet": CrowdNet,
+            "GEML": GEML,
+            "LSTM": LSTM,
         }
         model = model_dict[self.args.model].Model(self.args).float()
 
@@ -31,7 +33,7 @@ class Exp_Main(Exp_Basic):
         dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
         od_matrix, _, _, param = create_od_matrix(dataset_directory, self.args)
         train_loader = data_provider("train", self.args, od_matrix)
-        if self.args.model != "GTFormer":
+        if self.args.model in ["CrowdNet", "GEML"]:
             param = torch.tensor(param).float().to(self.device)
 
         path = os.path.join(self.args.path + f"/checkpoints_{self.args.model}/")
@@ -41,10 +43,10 @@ class Exp_Main(Exp_Basic):
         train_steps = len(train_loader)
         early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
 
-        if self.args.model == "GTFormer":
-            model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
-        else:
+        if self.args.model == "CrowdNet":
             model_optim = torch.optim.RMSprop(self.model.parameters(), lr=self.args.lr, momentum=0.5)
+        else:
+            model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
 
         criterion = nn.MSELoss()
         my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=model_optim, gamma=0.96)
