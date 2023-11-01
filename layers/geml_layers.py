@@ -9,13 +9,14 @@ class Grid_Embedding(nn.Module):
         self.linear2 = nn.Linear(d_model, d_model)
 
         self.d_model = d_model
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def forward(self, X, dis_matrix):
         B, L, O, D = X.shape
         sem_neibor = X > 0
         geo_neibor = dis_matrix <= 2
 
-        X_ = torch.zeros((B, L, O, O + D))
+        X_ = torch.zeros((B, L, O, O + D)).to(self.device)
         for i in range(O):
             X_[:, :, i] = torch.cat((X[:, :, i], X[:, :, :, i]), dim=-1)
 
