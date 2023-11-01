@@ -62,6 +62,8 @@ class Model(nn.Module):
         self.spatial_transformer_encoder = Encoder(spatial_encoder_layers, spatial_norm)
         self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
 
+        self.out_linear = nn.Linear(args.num_tiles**2, args.num_tiles**2)
+
     def forward(self, X, key_indices):
         # B: batch size
         # L: sequence length
@@ -69,7 +71,7 @@ class Model(nn.Module):
         # D: num destination
         B, L, O, D = X.shape
 
-        X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).reshape(B, L + 1, O * D)
+        X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).view(B, L + 1, O * D)
 
         for _ in range(self.num_blocks):
             temp_in = self.temporal_embedding(X)
@@ -82,7 +84,8 @@ class Model(nn.Module):
 
             X = temp_out + spat_out.permute(0, 2, 1)
 
-        out = X.reshape(B, L + 1, O, D)
+        out = self.out_linear(X)
+        out = X.view(B, L + 1, O, D)
 
         if self.args.save_outputs:
             return out[:, -1:, :, :], A_temporal, A_spatial
