@@ -7,6 +7,7 @@ class Grid_Embedding(nn.Module):
         super(Grid_Embedding, self).__init__()
         self.linear = nn.Linear(num_tiles * 2, d_model)
         self.linear2 = nn.Linear(d_model, d_model)
+        self.linear3 = nn.Linear(d_model, d_model)
 
         self.d_model = d_model
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -40,7 +41,7 @@ class Grid_Embedding(nn.Module):
             tile_deg[~index] = 0
             deg_w = tile_deg / sum_deg.unsqueeze(-1).expand(tile_deg.shape)
             b = Y * deg_w.unsqueeze(-1)
-            b = b.sum(dm=2)
+            b = b.sum(dim=2)
             b = Y[:, :, i] + b
             b = self.linear3(b)
             sem_out[:, :, i] = b
