@@ -23,8 +23,9 @@ class Model(nn.Module):
         # D: num destination
         B, L, O, D = X.shape
         spat_out = self.spatLayer(X, dis_matrix)
+        spat_out = spat_out.view(B * O, L, -1)
         temp_out = self.tempLayer(spat_out)
-        temp_out = self.bn(temp_out)  # B, L, O, d_model
+        temp_out = self.bn(temp_out.view(B, L, O, -1))  # B, L, O, d_model
 
         out = torch.zeros((B, 1, O, D))
         for o in range(O):
