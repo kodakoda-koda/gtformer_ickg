@@ -8,6 +8,7 @@ class Grid_Embedding(nn.Module):
         self.linear = nn.Linear(num_tiles * 2, d_model)
         self.linear2 = nn.Linear(d_model, d_model)
         self.linear3 = nn.Linear(d_model, d_model)
+        self.sigmoid = nn.Sigmoid()
 
         self.d_model = d_model
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -17,35 +18,24 @@ class Grid_Embedding(nn.Module):
         sem_neibor = X > 0
         geo_neibor = dis_matrix <= 2
 
-        X_ = torch.zeros((B, L, O, O + D)).to(self.device)
-        for i in range(O):
-            X_[:, :, i] = torch.cat((X[:, :, i], X[:, :, :, i]), dim=-1)
-
+        X_ = torch.cat((X, X.permute(0, 1, 3, 2)), dim=-1)
         Y = self.linear(X_)
 
-        geo_out = torch.zeros((B, L, O, self.d_model)).to(self.device)
-        sem_out = torch.zeros((B, L, O, self.d_model)).to(self.device)
-        for i in range(Y.shape[2]):
-            index = (geo_neibor[i, :] == True).nonzero().squeeze()
-            dis_w = torch.sqrt(dis_matrix[i, index]) / torch.sqrt(dis_matrix[i]).sum()
-            f_j = torch.mul(Y[:, :, index].permute(0, 1, 3, 2), dis_w).permute(0, 1, 3, 2)
-            a = Y[:, :, i] + f_j.sum(dim=2)
-            a = self.linear2(a)
-            geo_out[:, :, i] = a
+        sqrt_dis_matrix = torch.sqrt(dis_matrix)
+        sqrt_dis_matrix[~geo_neibor] = 0
+        dis_w = sqrt_dis_matrix / torch.sum(sqrt_dis_matrix, dim=-1)
+        f = torch.matmul(dis_w, Y)
+        geo_out = self.linear(Y + f)
+        geo_out = self.sigmoid(geo_out)
 
-            index_o = sem_neibor[:, :, i]
-            index_d = sem_neibor[:, :, :, i]
-            index = index_o | index_d
-            tile_deg = X_.sum(dim=-1)
-            sum_deg = tile_deg.sum(dim=-1)
-            tile_deg[~index] = 0
-            deg_w = tile_deg / sum_deg.unsqueeze(-1).expand(tile_deg.shape)
-            b = Y * deg_w.unsqueeze(-1)
-            b = b.sum(dim=2)
-            b = Y[:, :, i] + b
-            b = self.linear3(b)
-            sem_out[:, :, i] = b
+        tile_deg = X_.sum(-1)
+        tile_deg = tile_deg[:, :, None, :].repeat(1, 1, O, 1)
+        tile_deg[~sem_neibor] = 0
+        deg_w = tile_deg / tile_deg.sum(-1, keepdim=True)
+        f = torch.matmul(deg_w, Y)
+        sem_out = self.linear3(Y + f)
+        sem_out = self.sigmoid(sem_out)
 
         v = torch.cat((geo_out, sem_out), dim=-1)
 
-        return v  # (B, L, O, d_model*2)
+        return v
