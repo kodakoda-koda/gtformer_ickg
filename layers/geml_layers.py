@@ -23,8 +23,8 @@ class Grid_Embedding(nn.Module):
 
         Y = self.linear(X_)
 
-        geo_out = torch.zeros((B, L, O, self.d_model))
-        sem_out = torch.zeros((B, L, O, self.d_model))
+        geo_out = torch.zeros((B, L, O, self.d_model)).to(self.device)
+        sem_out = torch.zeros((B, L, O, self.d_model)).to(self.device)
         for i in range(Y.shape[2]):
             index = (geo_neibor[i, :] == True).nonzero().squeeze()
             dis_w = torch.sqrt(dis_matrix[i, index]) / torch.sqrt(dis_matrix[i]).sum()

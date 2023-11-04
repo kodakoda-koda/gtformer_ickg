@@ -24,15 +24,15 @@ class Model(nn.Module):
         B, L, O, D = X.shape
         spat_out = self.spatLayer(X, dis_matrix)
         spat_out = spat_out.view(B * O, L, -1)
-        temp_out = self.tempLayer(spat_out)
-        temp_out = self.bn(temp_out.view(B, L, O, -1))  # B, L, O, d_model
+        temp_out, (h, c) = self.tempLayer(spat_out)
+        temp_out = self.bn(temp_out.permute(0, 2, 1)).view(B, L, O, -1)  # B, L, O, d_model
 
         out = torch.zeros((B, 1, O, D))
         for o in range(O):
             for d in range(D):
-                o_v = temp_out[:, :, o]  # B, L, d_model
-                d_v = temp_out[:, :, d].view(B, L, self.d_model, 1)
-                o_v = self.linear(o_v).view(B, L, self.d_model, 1).view(B, L, 1, -1)
-                out[:, :, o, d] = torch.matmul(o_v, d_v).squeeze()
+                o_v = temp_out[:, -1:, o]  # B, 1, d_model
+                d_v = temp_out[:, -1:, d].view(B, 1, self.d_model, 1)
+                o_v = self.linear(o_v).view(B, 1, self.d_model, 1).view(B, 1, 1, -1)
+                out[:, :, o, d] = torch.matmul(o_v, d_v).squeeze()  # BLをB1に代入しようとしている
 
         return out
