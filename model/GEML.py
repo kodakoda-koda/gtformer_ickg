@@ -10,8 +10,9 @@ class Model(nn.Module):
         super(Model, self).__init__()
 
         self.spatLayer = Grid_Embedding(args.num_tiles, args.d_model)
+        self.spat_layer_norm = nn.LayerNorm(args.d_model * 2)
         self.tempLayer = nn.LSTM(input_size=args.d_model * 2, hidden_size=args.d_model)
-        self.bn = nn.BatchNorm1d(num_features=args.d_model)
+        self.temp_layer_norm = nn.LayerNorm(args.d_model)
         self.linear = nn.Linear(in_features=args.d_model, out_features=args.d_model, bias=True)
 
         self.d_model = args.d_model
@@ -23,11 +24,10 @@ class Model(nn.Module):
         # D: num destination
         B, L, O, D = X.shape
         spat_out = self.spatLayer(X, dis_matrix)
-        spat_out = spat_out.view(B * O, L, -1)
-        _, (h, _) = self.tempLayer(spat_out)
-        temp_out = self.bn(h.permute(0, 2, 1)).view(B, 1, O, -1)  # B, 1, O, d_model
-
-        temp_out = self.linear(temp_out)
+        spat_out = self.spat_layer_norm(spat_out.view(B * O, L, -1))
+        temp_out, (h, _) = self.tempLayer(spat_out)
+        temp_out = self.temp_layer_norm(temp_out[:, -1:, :])
+        temp_out = self.linear(temp_out.view(B, 1, O, -1))
         out = torch.matmul(temp_out, temp_out.permute(0, 1, 3, 2))
 
         return out

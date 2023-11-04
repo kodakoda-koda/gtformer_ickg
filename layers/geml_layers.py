@@ -25,13 +25,13 @@ class Grid_Embedding(nn.Module):
         sqrt_dis_matrix[~geo_neibor] = 0
         dis_w = sqrt_dis_matrix / torch.sum(sqrt_dis_matrix, dim=-1)
         f = torch.matmul(dis_w, Y)
-        geo_out = self.linear(Y + f)
+        geo_out = self.linear2(Y + f)
         geo_out = self.sigmoid(geo_out)
 
         tile_deg = X_.sum(-1)
         tile_deg = tile_deg[:, :, None, :].repeat(1, 1, O, 1)
         tile_deg[~sem_neibor] = 0
-        deg_w = tile_deg / tile_deg.sum(-1, keepdim=True)
+        deg_w = tile_deg / (tile_deg.sum(-1, keepdim=True) + 1e-5)
         f = torch.matmul(deg_w, Y)
         sem_out = self.linear3(Y + f)
         sem_out = self.sigmoid(sem_out)
