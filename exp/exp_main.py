@@ -190,6 +190,7 @@ class Exp_Main(Exp_Basic):
         print("MAE Error test: ", io_mae_test)
 
         # Write results
+        self.args.path = "/content/drive/MyDrive/2023_Kodama"
         save_path = os.path.join(
             self.args.path + "/results_data/" + f"/{self.args.city}_{self.args.data_type}_{self.args.model}"
         )
