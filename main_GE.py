@@ -21,7 +21,7 @@ def main():
     parser.add_argument("--path", type=str, default=".", help="current directory")
     parser.add_argument("--model", type=str, default="GEML", help="model name")
     parser.add_argument("--sample_time", type=str, default="60min", help="sample time")
-    parser.add_argument("--tile_size", type=str, default="1000m", help="tile size")
+    parser.add_argument("--tile_size", type=str, default="1500m", help="tile size")
 
     parser.add_argument("--itrs", type=int, default=1, help="number of run")
     parser.add_argument("--train_epochs", type=int, default=150, help="epochs")  # 30 GTFormer 150 CrowdNet
@@ -30,7 +30,7 @@ def main():
     parser.add_argument("--seq_len", type=int, default=11, help="input sequence length")
     parser.add_argument("--lr", type=int, default=1e-04, help="learning rate")
     parser.add_argument("--save_outputs", type=bool, default=False, help="save")
-    parser.add_argument("--city", type=str, default="NYC", help="city name")
+    parser.add_argument("--city", type=str, default="DC", help="city name")
     parser.add_argument("--data_type", type=str, default="Bike", help="data type")
     parser.add_argument("--num_tiles", type=int, default=55, help="number of tiles")  # set 55 for NYC, 154 for DC
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
