@@ -32,7 +32,7 @@ def main():
     parser.add_argument("--save_outputs", type=bool, default=False, help="save")
     parser.add_argument("--city", type=str, default="DC", help="city name")
     parser.add_argument("--data_type", type=str, default="Bike", help="data type")
-    parser.add_argument("--num_tiles", type=int, default=55, help="number of tiles")  # set 55 for NYC, 154 for DC
+    parser.add_argument("--num_tiles", type=int, default=99, help="number of tiles")  # set 55 for NYC, 99 for DC
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
 
     # GTFormer config
