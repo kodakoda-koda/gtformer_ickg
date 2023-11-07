@@ -21,7 +21,7 @@ def main():
     parser.add_argument("--path", type=str, default=".", help="current directory")
     parser.add_argument("--model", type=str, default="GTFormer", help="model name")
     parser.add_argument("--sample_time", type=str, default="60min", help="sample time")
-    parser.add_argument("--tile_size", type=str, default="1500m", help="tile size")
+    parser.add_argument("--tile_size", type=str, default="2000m", help="tile size")
 
     parser.add_argument("--itrs", type=int, default=1, help="number of run")
     parser.add_argument("--train_epochs", type=int, default=30, help="epochs")  # 30 GTFormer 150 CrowdNet
