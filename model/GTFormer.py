@@ -23,15 +23,13 @@ class Model(nn.Module):
         # D: num destination
         B, L, O, D = X.shape
 
-        # X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).view(B, L + 1, O * D)
-        X = X.view(B, L, O * D)
+        X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).view(B, L + 1, O * D)
 
         for block in self.blocks:
             X, A_temporal, A_spatial = block(X, key_indices)
 
         out = self.out_linear(X)
-        # out = out.view(B, L + 1, O, D)
-        out = out.view(B, L, O, D)
+        out = out.view(B, L + 1, O, D)
 
         if self.args.save_outputs:
             return out[:, -1:, :, :], A_temporal, A_spatial
