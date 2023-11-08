@@ -32,7 +32,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         # QE
         # qe = self.e_projection(queries).permute(0, 2, 1, 3)
-        qe = torch.matmul(queries, self.E[None, :, :, :])
+        qe = torch.matmul(queries.permute(0, 2, 1, 3), self.E[None, :, :, :])
 
         # Compute S^rel
         m = nn.ReflectionPad2d((0, L - 1, 0, 0))
