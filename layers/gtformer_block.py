@@ -97,7 +97,7 @@ class GTFormer_block(nn.Module):
         self.spatial_transformer_encoder = Encoder(spatial_encoder_layers, spatial_norm)
         self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
 
-        self.out_linear = nn.Linear((args.num_tiles**2) * 2, args.num_tiles**2)
+        self.out_linear = nn.Linear(args.num_tiles**2, args.num_tiles**2)
 
     def forward(self, X, key_indices):
         temp_in = self.temporal_embedding(X)
@@ -108,7 +108,6 @@ class GTFormer_block(nn.Module):
         spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
         spat_out = self.spatial_linear(spat_out)
 
-        out = torch.cat(temp_out, spat_out.permute(0, 2, 1))
-        out = self.out_linear(out)
+        out = temp_out + spat_out.permute(0, 2, 1)
 
         return out, A_temporal, A_spatial

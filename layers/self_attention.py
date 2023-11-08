@@ -40,7 +40,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         scores = torch.einsum("blhd,bshd->bhls", queries, keys)
 
-        A = torch.softmax(scale * (scores + s_rel), dim=-1)
+        A = torch.softmax(scale * (scores * s_rel), dim=-1)
         V = torch.einsum("bhls,bshd->blhd", A, values)
         out = V.contiguous()
 

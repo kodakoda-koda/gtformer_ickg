@@ -28,7 +28,7 @@ class Model(nn.Module):
         for block in self.blocks:
             X, A_temporal, A_spatial = block(X, key_indices)
 
-        # out = self.out_linear(X)
+        out = self.out_linear(X)
         out = out.view(B, L + 1, O, D)
 
         if self.args.save_outputs:
