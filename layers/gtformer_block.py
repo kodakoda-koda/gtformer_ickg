@@ -60,8 +60,8 @@ class GTFormer_block(nn.Module):
 
         if args.temporal_mode == "BRPE":
             temporal_selfattention = Relative_Temporal_SelfAttention(
-                args.d_model, args.n_head, args.seq_len + 1, args.save_outputs
-            )
+                args.d_model, args.n_head, args.seq_len, args.save_outputs
+            )  # + 1
         else:
             temporal_selfattention = Temporal_SelfAttention(args.d_model, args.n_head, args.save_outputs)
 
@@ -77,7 +77,7 @@ class GTFormer_block(nn.Module):
         self.temporal_linear = nn.Linear(args.d_model, args.num_tiles**2)
 
         # Geospatial Transformer Block
-        self.spatial_embedding = TokenEmbedding_spatial(args.seq_len + 1, args.d_model)
+        self.spatial_embedding = TokenEmbedding_spatial(args.seq_len, args.d_model)  # + 1
 
         if args.spatial_mode == "KVR":
             spatial_selfattention = Geospatial_SelfAttention(args.d_model, args.n_head, args.save_outputs)
@@ -95,7 +95,7 @@ class GTFormer_block(nn.Module):
 
         spatial_norm = nn.LayerNorm(args.d_model)
         self.spatial_transformer_encoder = Encoder(spatial_encoder_layers, spatial_norm)
-        self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
+        self.spatial_linear = nn.Linear(args.d_model, args.seq_len)  #  + 1
         self.norm = nn.LayerNorm(args.num_tiles**2)
 
     def forward(self, X, key_indices):
