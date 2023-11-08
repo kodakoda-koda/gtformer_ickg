@@ -102,10 +102,11 @@ class GTFormer_block(nn.Module):
         temp_out, A_temporal = self.temporal_transformer_encoder(temp_in, key_indices)
         temp_out = self.temporal_linear(temp_out)
 
-        spat_in = self.spatial_embedding(X.permute(0, 2, 1))
+        spat_in = self.spatial_embedding(temp_out.permute(0, 2, 1))
         spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
         spat_out = self.spatial_linear(spat_out)
 
-        X = temp_out + spat_out.permute(0, 2, 1)
+        # X = temp_out + spat_out.permute(0, 2, 1)
+        X = spat_out.permute(0, 2, 1)
 
         return X, A_temporal, A_spatial
