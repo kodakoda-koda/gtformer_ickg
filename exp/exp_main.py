@@ -198,9 +198,16 @@ class Exp_Main(Exp_Basic):
 
         # Write results
         self.args.path = "/content/drive/MyDrive/2023_Kodama"
-        save_path = os.path.join(
-            self.args.path + "/results_data/" + f"/{self.args.city}_{self.args.data_type}_{self.args.model}"
-        )
+        if self.args.model == "GTFormer":
+            save_path = os.path.join(
+                self.args.path
+                + "/results_data/"
+                + f"/{self.args.city}_{self.args.data_type}_{self.args.model}_{self.args.spatial_mode}"
+            )
+        else:
+            save_path = os.path.join(
+                self.args.path + "/results_data/" + f"/{self.args.city}_{self.args.data_type}_{self.args.model}"
+            )
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         f = open(save_path + "/result.txt", "a")
