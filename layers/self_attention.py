@@ -13,11 +13,14 @@ class Relative_Temporal_SelfAttention(nn.Module):
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
 
         # Relative Postion Embedding E
-        self.e_projection = nn.Linear(d_model // n_head, len_, bias=False)
+        self.E = nn.Parameter(torch.Tensor(n_head, d_model // n_head, len_))
+        # self.e_projection = nn.Linear(d_model // n_head, len_, bias=False)
 
         self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
         self.save_outputs = save_outputs
+
+        nn.init.xavier_uniform_(self.E)
 
     def forward(self, x, _):
         B, L, _ = x.shape
@@ -28,7 +31,8 @@ class Relative_Temporal_SelfAttention(nn.Module):
         values = self.value_projection(x).view(B, L, H, -1)
 
         # QE
-        qe = self.e_projection(queries).permute(0, 2, 1, 3)
+        # qe = self.e_projection(queries).permute(0, 2, 1, 3)
+        qe = torch.matmul(queries, self.E[None, :, :, :])
 
         # Compute S^rel
         m = nn.ReflectionPad2d((0, L - 1, 0, 0))
@@ -40,7 +44,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         scores = torch.einsum("blhd,bshd->bhls", queries, keys)
 
-        A = torch.softmax(scale * (scores * s_rel), dim=-1)
+        A = torch.softmax(scale * (scores + s_rel), dim=-1)
         V = torch.einsum("bhls,bshd->blhd", A, values)
         out = V.contiguous()
 
@@ -166,9 +170,9 @@ class AFTFull(nn.Module):
         super().__init__()
 
         self.n_head = n_head
-        self.query_projection = nn.Linear(d_model, d_model)
-        self.key_projection = nn.Linear(d_model, d_model)
-        self.value_projection = nn.Linear(d_model, d_model)
+        self.query_projection = nn.Linear(d_model, d_model, bias=False)
+        self.key_projection = nn.Linear(d_model, d_model, bias=False)
+        self.value_projection = nn.Linear(d_model, d_model, bias=False)
         self.out_projection = nn.Linear(d_model, d_model)
         self.wbias = nn.Parameter(torch.Tensor(seq_len, seq_len))
         self.save_outputs = save_outputs
