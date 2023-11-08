@@ -11,7 +11,7 @@ class Model(nn.Module):
 
         self.spatLayer = Grid_Embedding(args.num_tiles, args.d_model)
         self.spat_layer_norm = nn.LayerNorm(args.d_model * 2)
-        self.tempLayer = nn.LSTM(input_size=args.d_model * 2, hidden_size=args.d_model)
+        self.tempLayer = nn.LSTM(input_size=args.d_model * 2, hidden_size=args.d_model, batch_first=True)
         self.temp_layer_norm = nn.LayerNorm(args.d_model)
         self.linear = nn.Linear(in_features=args.d_model, out_features=args.d_model, bias=True)
 
