@@ -16,14 +16,14 @@ class Grid_Embedding(nn.Module):
     def forward(self, X, dis_matrix):
         B, L, O, D = X.shape
         sem_neibor = X > 0
-        geo_neibor = dis_matrix <= 2
+        geo_neibor = dis_matrix <= 3
 
         X_ = torch.cat((X, X.permute(0, 1, 3, 2)), dim=-1)
         Y = self.linear(X_)
 
         sqrt_dis_matrix = torch.sqrt(dis_matrix)
         sqrt_dis_matrix[~geo_neibor] = 0.0
-        dis_w = sqrt_dis_matrix / torch.sum(sqrt_dis_matrix, dim=-1)
+        dis_w = sqrt_dis_matrix / torch.sum(sqrt_dis_matrix, dim=-1)[:, None]
         f = torch.matmul(dis_w, Y)
         geo_out = self.linear2(Y + f)
         geo_out = self.sigmoid(geo_out)
