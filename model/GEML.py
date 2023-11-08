@@ -26,8 +26,8 @@ class Model(nn.Module):
         spat_out = self.spatLayer(X, dis_matrix)
         spat_out = self.spat_layer_norm(spat_out.view(B * O, L, -1))
         temp_out, (h, _) = self.tempLayer(spat_out)
-        temp_out = self.temp_layer_norm(temp_out[:, -1:, :])
-        temp_out = self.linear(temp_out.view(B, 1, O, -1))
+        temp_out = self.temp_layer_norm(temp_out)
+        temp_out = self.linear(temp_out.view(B, L, O, -1)[:, -1:])
         out = torch.matmul(temp_out, temp_out.permute(0, 1, 3, 2))
 
         return out

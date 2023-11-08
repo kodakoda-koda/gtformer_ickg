@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--patience", type=int, default=5, help="patience of early stopping")
     parser.add_argument("--batch_size", type=int, default=8, help="batch size")
     parser.add_argument("--seq_len", type=int, default=11, help="input sequence length")
-    parser.add_argument("--lr", type=int, default=1e-04, help="learning rate")
+    parser.add_argument("--lr", type=int, default=1e-03, help="learning rate")
     parser.add_argument("--save_outputs", type=bool, default=False, help="save")
     parser.add_argument("--city", type=str, default="NYC", help="city name")
     parser.add_argument("--data_type", type=str, default="Bike", help="data type")

@@ -96,6 +96,7 @@ class GTFormer_block(nn.Module):
         spatial_norm = nn.LayerNorm(args.d_model)
         self.spatial_transformer_encoder = Encoder(spatial_encoder_layers, spatial_norm)
         self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
+        self.norm = nn.LayerNorm(args.d_model)
 
     def forward(self, X, key_indices):
         temp_in = self.temporal_embedding(X)
@@ -107,5 +108,6 @@ class GTFormer_block(nn.Module):
         spat_out = self.spatial_linear(spat_out)
 
         X = temp_out + spat_out.permute(0, 2, 1)
+        X = self.norm(X)
 
         return X, A_temporal, A_spatial
