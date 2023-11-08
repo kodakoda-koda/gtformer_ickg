@@ -17,7 +17,6 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
-        self.len_ = len_
         self.save_outputs = save_outputs
 
     def forward(self, x, _):
@@ -32,10 +31,10 @@ class Relative_Temporal_SelfAttention(nn.Module):
         qe = self.e_projection(queries).permute(0, 2, 1, 3)
 
         # Compute S^rel
-        m = nn.ReflectionPad2d((0, self.len_ - 1, 0, 0))
-        qe = nn.functional.pad(m(qe), (0, 1, 0, self.len_ - 1))
+        m = nn.ReflectionPad2d((0, L - 1, 0, 0))
+        qe = nn.functional.pad(m(qe), (0, 1, 0, L - 1))
         qe = qe.reshape(B, H, qe.shape[-1], qe.shape[-2])
-        s_rel = qe[:, :, : self.len_, self.len_ - 1 :]
+        s_rel = qe[:, :, :L, L - 1 :]
 
         scale = 1.0 / math.sqrt(queries.shape[-1])
 
