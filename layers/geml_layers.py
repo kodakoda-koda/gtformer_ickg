@@ -8,6 +8,7 @@ class Grid_Embedding(nn.Module):
         self.linear = nn.Linear(num_tiles * 2, d_model)
         self.linear2 = nn.Linear(d_model, d_model)
         self.linear3 = nn.Linear(d_model, d_model)
+        self.out_linear = nn.Linear(d_model * 2, num_tiles)
         self.sigmoid = nn.Sigmoid()
 
         self.d_model = d_model
@@ -37,5 +38,6 @@ class Grid_Embedding(nn.Module):
         sem_out = self.sigmoid(sem_out)
 
         v = torch.cat((geo_out, sem_out), dim=-1)
+        v = self.out_linear(v)
 
         return v

@@ -8,18 +8,18 @@ class Model(nn.Module):
         super(Model, self).__init__()
         self.block1 = STGCNBlock(
             in_channels=args.num_tiles,
-            out_channels=args.d_temporal,
-            spatial_channels=args.d_spatial,
+            out_channels=args.d_model,
+            spatial_channels=args.d_model * 4,
             num_nodes=args.num_tiles,
         )
         self.block2 = STGCNBlock(
-            in_channels=args.d_temporal,
-            out_channels=args.d_temporal,
-            spatial_channels=args.d_spatial,
+            in_channels=args.d_model,
+            out_channels=args.d_model,
+            spatial_channels=args.d_model * 4,
             num_nodes=args.num_tiles,
         )
 
-        self.last_temporal = TimeBlock(in_channels=args.d_temporal, out_channels=args.num_tiles, kernel_size=3)
+        self.last_temporal = TimeBlock(in_channels=args.d_model, out_channels=args.num_tiles, kernel_size=3)
         self.last_conv = nn.Conv2d(in_channels=args.num_tiles, out_channels=args.num_tiles, kernel_size=(1, 1))
 
     def forward(self, X, A_hat):

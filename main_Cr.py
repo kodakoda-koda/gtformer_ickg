@@ -46,7 +46,7 @@ def main():
 
     # CrowdNet config
     parser.add_argument("--d_temporal", type=int, default=64)
-    parser.add_argument("--d_spatial", type=int, default=16)
+    parser.add_argument("--d_spatial", type=int, default=64 * 4)
 
     args = parser.parse_args(args=[])
 

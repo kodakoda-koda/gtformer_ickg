@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 
@@ -5,9 +6,8 @@ class Model(nn.Module):
     def __init__(self, args):
         super(Model, self).__init__()
 
-        self.lstm1 = nn.LSTM(args.num_tiles**2, args.d_model, batch_first=True)
-        self.lstm2 = nn.LSTM(args.d_model, args.d_model, batch_first=True)
-        self.linear = nn.Linear(args.d_model, args.num_tiles**2)
+        self.lstm = nn.LSTM(args.num_tiles, args.d_model, batch_first=True)
+        self.linear = nn.Linear(args.d_model, args.d_model)
 
     def forward(self, X, _):
         # B: batch size
@@ -15,11 +15,11 @@ class Model(nn.Module):
         # O: num origin
         # D: num destination
         B, L, O, D = X.shape
-        X = X.view(B, L, O * D)
+        X = X.view(B * O, L, D)
 
-        lstm1_out, (h, c) = self.lstm1(X)
-        lstm2_out, (h, c) = self.lstm2(lstm1_out[:, -1:, :])
-        out = self.linear(lstm2_out)
-        out = out.view(B, 1, O, D)
+        lstm_out, (h, c) = self.lstm(X)
+        lstm_out = lstm_out.reshape(B, L, O, -1)[:, -1:]
+        lstm_out_ = self.linear(lstm_out)
+        out = torch.matmul(lstm_out_, lstm_out.permute(0, 1, 3, 2))
 
         return out
