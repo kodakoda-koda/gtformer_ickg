@@ -2,6 +2,7 @@ import ast
 
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 from utils.dataset_utils import get_normalized_adj
 
@@ -43,6 +44,9 @@ def create_od_matrix(dataset_directory, args):
     od_matrix = od_matrix[:, ~(od_sum == 0).all(1), :]
     od_matrix = od_matrix[:, :, ~(od_sum == 0).all(1)]
 
+    scaler = MinMaxScaler()
+    od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
+
     # Get indices of M in KVR for GTFformer
     if args.model == "GTFormer":
         key_indices = []
@@ -58,8 +62,7 @@ def create_od_matrix(dataset_directory, args):
 
     # Get adjacency matrix for CrowdNet
     elif args.model == "CrowdNet":
-        A = od_matrix.sum(axis=0)
-        A_hat = get_normalized_adj(A)
+        A_hat = get_normalized_adj(od_sum)
 
     elif args.model == "GEML":
         tessellation = pd.read_csv(dataset_directory + "Tessellation_" + args.tile_size + "_" + args.city + ".csv")
@@ -79,10 +82,10 @@ def create_od_matrix(dataset_directory, args):
     empty_indices = [i for i, x in enumerate((od_sum == 0).all(1)) if x]
 
     if args.model == "GTFormer":
-        return od_matrix, min_tile_id, empty_indices, key_indices
+        return od_matrix, min_tile_id, empty_indices, scaler, key_indices
     elif args.model == "CrowdNet":
-        return od_matrix, min_tile_id, empty_indices, A_hat
+        return od_matrix, min_tile_id, empty_indices, scaler, A_hat
     elif args.model == "GEML":
-        return od_matrix, min_tile_id, empty_indices, dis_matrix
+        return od_matrix, min_tile_id, empty_indices, scaler, dis_matrix
     else:
-        return od_matrix, min_tile_id, empty_indices, None
+        return od_matrix, min_tile_id, empty_indices, scaler, None
