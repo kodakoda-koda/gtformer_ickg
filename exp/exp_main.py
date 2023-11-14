@@ -49,8 +49,7 @@ class Exp_Main(Exp_Basic):
         else:
             model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
 
-        mse_criterion = nn.MSELoss()
-        mae_criterion = nn.L1Loss()
+        criterion = nn.MSELoss()
         my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=model_optim, gamma=0.96)
 
         for epoch in range(self.args.train_epochs):
@@ -70,10 +69,7 @@ class Exp_Main(Exp_Basic):
                 else:
                     outputs = self.model(batch_x, param)
 
-                mse_loss = mse_criterion(outputs, batch_y)
-                mae_loss = mae_criterion(outputs, batch_y)
-                loss = 0.4 * mse_loss + 0.6 * mae_loss
-
+                loss = criterion(outputs, batch_y)
                 train_loss.append(loss.item())
 
                 loss.backward()
@@ -101,8 +97,7 @@ class Exp_Main(Exp_Basic):
     def vali(self, od_matrix, param):
         vali_loader = data_provider("val", self.args, od_matrix)
         total_loss = []
-        mse_criterion = nn.MSELoss()
-        mae_criterion = nn.L1Loss()
+        criterion = nn.MSELoss()
         self.model.eval()
 
         with torch.no_grad():
@@ -115,9 +110,7 @@ class Exp_Main(Exp_Basic):
                 else:
                     outputs = self.model(batch_x, param)
 
-                mse_loss = mse_criterion(outputs, batch_y)
-                mae_loss = mae_criterion(outputs, batch_y)
-                loss = 0.3 * mse_loss + 0.7 + mae_loss
+                loss = criterion(outputs, batch_y)
 
                 total_loss.append(loss.item())
         total_loss = np.average(total_loss)

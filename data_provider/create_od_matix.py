@@ -62,7 +62,8 @@ def create_od_matrix(dataset_directory, args):
 
     # Get adjacency matrix for CrowdNet
     elif args.model == "CrowdNet":
-        A_hat = get_normalized_adj(od_sum)
+        A = od_matrix.sum(0)
+        A_hat = get_normalized_adj(A)
 
     elif args.model == "GEML":
         tessellation = pd.read_csv(dataset_directory + "Tessellation_" + args.tile_size + "_" + args.city + ".csv")
