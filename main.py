@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--tile_size", type=str, default="1000m", help="tile size")
 
     parser.add_argument("--itrs", type=int, default=1, help="number of run")
-    parser.add_argument("--train_epochs", type=int, default=30, help="epochs")  # 30 GTFormer 150 CrowdNet
+    parser.add_argument("--train_epochs", type=int, default=150, help="epochs")  # 30 GTFormer 150 CrowdNet
     parser.add_argument("--patience", type=int, default=5, help="patience of early stopping")
     parser.add_argument("--batch_size", type=int, default=16, help="batch size")
     parser.add_argument("--seq_len", type=int, default=11, help="input sequence length")

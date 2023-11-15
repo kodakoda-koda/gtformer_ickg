@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--patience", type=int, default=5, help="patience of early stopping")
     parser.add_argument("--batch_size", type=int, default=16, help="batch size")
     parser.add_argument("--seq_len", type=int, default=11, help="input sequence length")
-    parser.add_argument("--lr", type=int, default=1e-03, help="learning rate")
+    parser.add_argument("--lr", type=int, default=1e-04, help="learning rate")
     parser.add_argument("--save_outputs", type=bool, default=False, help="save")
     parser.add_argument("--city", type=str, default="NYC", help="city name")
     parser.add_argument("--data_type", type=str, default="Bike", help="data type")
@@ -36,7 +36,7 @@ def main():
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
 
     # GTFormer config
-    parser.add_argument("--d_model", type=int, default=64)
+    parser.add_argument("--d_model", type=int, default=16)
     parser.add_argument("--n_head", type=int, default=8)
     parser.add_argument("--temporal_num_layers", type=int, default=2)
     parser.add_argument("--spatial_num_layers", type=int, default=1)

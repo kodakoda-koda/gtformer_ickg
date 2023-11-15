@@ -36,7 +36,7 @@ def main():
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
 
     # GTFormer config
-    parser.add_argument("--d_model", type=int, default=64)
+    parser.add_argument("--d_model", type=int, default=16)
     parser.add_argument("--n_head", type=int, default=8)
     parser.add_argument("--temporal_num_layers", type=int, default=2)
     parser.add_argument("--spatial_num_layers", type=int, default=1)
