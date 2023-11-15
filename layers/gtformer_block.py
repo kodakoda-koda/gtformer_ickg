@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from layers.embed import TokenEmbedding_spatial, TokenEmbedding_temporal
 from layers.self_attention import (
     AFTFull,
+    AFTSimple,
     Geospatial_SelfAttention,
     Relative_Temporal_SelfAttention,
     Spatial_SelfAttention,
@@ -82,7 +83,9 @@ class GTFormer_block(nn.Module):
         if args.spatial_mode == "KVR":
             spatial_selfattention = Geospatial_SelfAttention(args.d_model, args.n_head, args.save_outputs)
         elif args.spatial_mode == "AFT":
-            spatial_selfattention = AFTFull(args.num_tiles**2, args.d_model, args.n_head, args.save_outputs)
+            # spatial_selfattention = AFTFull(args.num_tiles**2, args.d_model, args.n_head, args.save_outputs)
+            spatial_selfattention = AFTSimple(args.num_tiles**2, args.d_model, args.n_head, args.save_outputs)
+
         else:
             spatial_selfattention = Spatial_SelfAttention(args.d_model, args.n_head, args.save_outputs)
 
