@@ -208,6 +208,7 @@ class Exp_Main(Exp_Basic):
             os.makedirs(save_path)
         f = open(save_path + "/result.txt", "a")
         f.write("itr:{} \n".format(itr + 1))
+        f.write(f"args: {self.args}")
         f.write("OD flow prediction:   rmse:{}, mae:{} \n".format(od_rmse_test, od_mae_test))
         f.write("IO flow prediction:   rmse:{}, mae:{} \n".format(io_rmse_test, io_mae_test))
         f.write("\n")
