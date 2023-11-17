@@ -213,7 +213,7 @@ class AFTSimple(nn.Module):
 
         self.save_outputs = save_outputs
 
-    def forward(self, x):
+    def forward(self, x, _):
         B, T, _ = x.shape
         H = self.n_head
 
