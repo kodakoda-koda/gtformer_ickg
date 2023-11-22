@@ -56,34 +56,29 @@ def main():
     if not os.path.isfile(dataset_directory + "df_grouped_" + args.tile_size + "_" + args.sample_time + ".csv"):
         load_dataset(args.city, args.data_type, args.tile_size, args.sample_time, dataset_directory)
 
-    for d in [8, 16, 32, 64]:
-        args.d_model = d
-        print("Args in experiment:")
-        print(
-            f"model: {args.model}, city: {args.city}, data type: {args.data_type}, sample time: {args.sample_time}, tile size: {args.tile_size}, num tiles: {args.num_tiles}"
-        )
-        if args.model == "GTFormer":
-            print(
-                f"num_blocks: {args.num_blocks}, temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}"
-            )
+    print("Args in experiment:")
+    print(
+        f"model: {args.model}, city: {args.city}, data type: {args.data_type}, sample time: {args.sample_time}, tile size: {args.tile_size}, num tiles: {args.num_tiles}"
+    )
+    if args.model == "GTFormer":
+        print(f"num_blocks: {args.num_blocks}, temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}")
 
-        Exp = Exp_Main
+    Exp = Exp_Main
 
-        for itr in range(args.itrs):
-            print("\n")
-            print("------------------------------------------------------------------------------")
-            print("------------------------------------------------------------------------------")
-            print(f"itr : {itr+1}")
+    for itr in range(args.itrs):
+        print("\n")
+        print("------------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------")
+        print(f"itr : {itr+1}")
 
-            exp = Exp(args)  # set experiments
-            print(">>>>>>>start training : >>>>>>>>>>>>>>>>>>>>>>>>>>")
-            exp.train()
+        exp = Exp(args)  # set experiments
+        print(">>>>>>>start training : >>>>>>>>>>>>>>>>>>>>>>>>>>")
+        exp.train()
 
-            print(">>>>>>>testing : <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-            exp.test(itr)
+        print(">>>>>>>testing : <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        exp.test(itr)
 
-            torch.cuda.empty_cache()
-            print()
+        torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
