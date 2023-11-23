@@ -25,7 +25,7 @@ def main(d):
 
     parser.add_argument("--itrs", type=int, default=1, help="number of run")
     parser.add_argument("--train_epochs", type=int, default=150, help="epochs")  # 30 GTFormer 150 CrowdNet
-    parser.add_argument("--patience", type=int, default=5, help="patience of early stopping")
+    parser.add_argument("--patience", type=int, default=10, help="patience of early stopping")
     parser.add_argument("--batch_size", type=int, default=16, help="batch size")
     parser.add_argument("--seq_len", type=int, default=11, help="input sequence length")
     parser.add_argument("--lr", type=int, default=1e-04, help="learning rate")  # DCは1e-03
@@ -38,15 +38,11 @@ def main(d):
     # GTFormer config
     parser.add_argument("--d_model", type=int, default=16)
     parser.add_argument("--n_head", type=int, default=8)
-    parser.add_argument("--temporal_num_layers", type=int, default=2)
+    parser.add_argument("--temporal_num_layers", type=int, default=1)
     parser.add_argument("--spatial_num_layers", type=int, default=1)
     parser.add_argument("--num_blocks", type=int, default=2)
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
     parser.add_argument("--spatial_mode", type=str, default="AFT", help='["AFT", "KVR", "None"]')
-
-    # CrowdNet config
-    parser.add_argument("--d_temporal", type=int, default=64)
-    parser.add_argument("--d_spatial", type=int, default=16)
 
     args = parser.parse_args(args=[])
 

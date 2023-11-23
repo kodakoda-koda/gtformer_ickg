@@ -44,10 +44,6 @@ def main():
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
     parser.add_argument("--spatial_mode", type=str, default="AFT", help='["AFT", "KVR", "None"]')
 
-    # CrowdNet config
-    parser.add_argument("--d_temporal", type=int, default=64)
-    parser.add_argument("--d_spatial", type=int, default=16)
-
     args = parser.parse_args(args=[])
 
     dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")

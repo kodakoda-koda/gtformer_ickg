@@ -44,8 +44,9 @@ def create_od_matrix(dataset_directory, args):
     od_matrix = od_matrix[:, ~(od_sum == 0).all(1), :]
     od_matrix = od_matrix[:, :, ~(od_sum == 0).all(1)]
 
-    scaler = MinMaxScaler()
-    od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
+    if args.model == "GTFormer":
+        scaler = MinMaxScaler()
+        od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
 
     # Get indices of M in KVR for GTFformer
     if args.model == "GTFormer":
@@ -85,8 +86,8 @@ def create_od_matrix(dataset_directory, args):
     if args.model == "GTFormer":
         return od_matrix, min_tile_id, empty_indices, scaler, key_indices
     elif args.model == "CrowdNet":
-        return od_matrix, min_tile_id, empty_indices, scaler, A_hat
+        return od_matrix, min_tile_id, empty_indices, None, A_hat
     elif args.model == "GEML":
-        return od_matrix, min_tile_id, empty_indices, scaler, dis_matrix
+        return od_matrix, min_tile_id, empty_indices, None, dis_matrix
     else:
-        return od_matrix, min_tile_id, empty_indices, scaler, None
+        return od_matrix, min_tile_id, empty_indices, None, None

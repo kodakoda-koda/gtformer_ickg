@@ -163,8 +163,9 @@ class Exp_Main(Exp_Basic):
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
 
-        preds = scaler.inverse_transform(preds.reshape(-1, 1)).reshape(preds.shape)
-        trues = scaler.inverse_transform(trues.reshape(-1, 1)).reshape(trues.shape)
+        if self.args.model == "GTFormer":
+            preds = scaler.inverse_transform(preds.reshape(-1, 1)).reshape(preds.shape)
+            trues = scaler.inverse_transform(trues.reshape(-1, 1)).reshape(trues.shape)
 
         # Error of OD flow
         od_rmse_test = np.sqrt(mean_squared_error(trues.flatten().reshape(-1, 1), preds.flatten().reshape(-1, 1)))

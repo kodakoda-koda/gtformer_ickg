@@ -9,13 +9,13 @@ class Model(nn.Module):
         self.block1 = STGCNBlock(
             in_channels=args.num_tiles,
             out_channels=args.d_model,
-            spatial_channels=args.d_model // 4,
+            spatial_channels=args.d_model * 4,
             num_nodes=args.num_tiles,
         )
         self.block2 = STGCNBlock(
             in_channels=args.d_model,
             out_channels=args.d_model,
-            spatial_channels=args.d_model // 4,
+            spatial_channels=args.d_model * 4,
             num_nodes=args.num_tiles,
         )
 
