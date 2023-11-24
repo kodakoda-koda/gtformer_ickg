@@ -49,7 +49,8 @@ class Exp_Main(Exp_Basic):
         else:
             model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
 
-        criterion = nn.MSELoss()
+        mse_criterion = nn.MSELoss()
+        mae_criterion = nn.L1Loss()
         my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=model_optim, gamma=0.96)
 
         for epoch in range(self.args.train_epochs):
@@ -64,12 +65,14 @@ class Exp_Main(Exp_Basic):
                 batch_x = batch_x.float().to(self.device)
                 batch_y = batch_y.float().to(self.device)
 
-                if self.args.save_outputs:
+                if self.args.save_attention:
                     outputs, _, _ = self.model(batch_x, param)
                 else:
                     outputs = self.model(batch_x, param)
 
-                loss = criterion(outputs, batch_y)
+                mse_loss = mse_criterion(outputs, batch_y)
+                mae_loss = mae_criterion(outputs, batch_y)
+                loss = mse_loss + mae_loss
                 train_loss.append(loss.item())
 
                 loss.backward()
@@ -97,7 +100,8 @@ class Exp_Main(Exp_Basic):
     def vali(self, od_matrix, param):
         vali_loader = data_provider("val", self.args, od_matrix)
         total_loss = []
-        criterion = nn.MSELoss()
+        mse_criterion = nn.MSELoss()
+        mae_criterion = nn.L1loss()
         self.model.eval()
 
         with torch.no_grad():
@@ -105,12 +109,14 @@ class Exp_Main(Exp_Basic):
                 batch_x = batch_x.float().to(self.device)
                 batch_y = batch_y.float().to(self.device)
 
-                if self.args.save_outputs:
+                if self.args.save_attention:
                     outputs, _, _ = self.model(batch_x, param)
                 else:
                     outputs = self.model(batch_x, param)
 
-                loss = criterion(outputs, batch_y)
+                mse_loss = mse_criterion(outputs, batch_y)
+                mae_loss = mae_criterion(outputs, batch_y)
+                loss = mse_loss + mae_loss
 
                 total_loss.append(loss.item())
         total_loss = np.average(total_loss)
@@ -138,27 +144,13 @@ class Exp_Main(Exp_Basic):
                 batch_x = batch_x.float().to(self.device)
                 batch_y = batch_y.float().to(self.device)
 
-                if self.args.save_outputs:
+                if self.args.save_attention:
                     outputs, A_temporal, A_spatial = self.model(batch_x, param)
                 else:
                     outputs = self.model(batch_x, param)
 
                 preds.append(outputs.cpu().detach().numpy())
                 trues.append(batch_y.cpu().detach().numpy())
-
-                if self.args.model == "GTFormer":
-                    if self.args.save_outputs:
-                        if self.args.use_kvr:
-                            A_spatial_ = torch.zeros(
-                                (
-                                    self.args.batch_size,
-                                    self.args.n_head,
-                                    self.args.num_tiles**2,
-                                    self.args.num_tiles**2,
-                                )
-                            ).to(self.device)
-                            for j in range(self.args.num_tiles**4):
-                                A_spatial_[:, :, j, param[j]] = A_spatial[:, :, j, :]
 
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
@@ -217,7 +209,7 @@ class Exp_Main(Exp_Basic):
         f.close()
 
         # save predictions and true values
-        if self.args.save_outputs:
+        if self.args.save_attention:
             if not os.path.exists(save_path + f"/{itr}"):
                 os.makedirs(save_path + f"/{itr}")
             np.save(save_path + f"/{itr}/" + "od_preds.npy", preds)
@@ -226,6 +218,6 @@ class Exp_Main(Exp_Basic):
             np.save(save_path + f"/{itr}/" + "io_trues.npy", trues_map)
             if self.args.model == "GTFormer":
                 np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().detach().numpy())
-                np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial_.cpu().detach().numpy())
+                np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().detach().numpy())
 
         return

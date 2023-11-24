@@ -50,7 +50,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         out = out.view(B, L, -1)
 
-        if self.save_outputs:
+        if self.save_attention:
             return self.out_projection(out), A
         else:
             return self.out_projection(out), None
@@ -86,7 +86,7 @@ class Temporal_SelfAttention(nn.Module):
 
         out = out.view(B, L, -1)
 
-        if self.save_outputs:
+        if self.save_attention:
             return self.out_projection(out), A
         else:
             return self.out_projection(out), None
@@ -124,7 +124,7 @@ class Geospatial_SelfAttention(nn.Module):
 
         out = out.view(B, L, -1)
 
-        if self.save_outputs:
+        if self.save_attention:
             return self.out_projection(out), A.squeeze()
         else:
             return self.out_projection(out), None
@@ -159,7 +159,7 @@ class Spatial_SelfAttention(nn.Module):
 
         out = out.view(B, L, -1)
 
-        if self.save_outputs:
+        if self.save_attention:
             return self.out_projection(out), A
         else:
             return self.out_projection(out), None
@@ -194,7 +194,7 @@ class AFTFull(nn.Module):
 
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
-        if self.save_outputs:
+        if self.save_attention:
             return self.out_projection(out), None
         else:
             return self.out_projection(out), None
@@ -227,7 +227,7 @@ class AFTSimple(nn.Module):
 
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
-        if self.save_outputs:
+        if self.save_attention:
             return self.out_projection(out), None
         else:
             return self.out_projection(out), None

@@ -31,7 +31,7 @@ class Model(nn.Module):
         out = self.out_linear(X)
         out = out.view(B, L + 1, O, D)
 
-        if self.args.save_outputs:
+        if self.args.save_attention:
             return out[:, -1:, :, :], A_temporal, A_spatial
         else:
             return out[:, -1:, :, :]
