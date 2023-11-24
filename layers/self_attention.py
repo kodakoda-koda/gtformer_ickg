@@ -5,7 +5,7 @@ import torch.nn as nn
 
 
 class Relative_Temporal_SelfAttention(nn.Module):
-    def __init__(self, d_model, n_head, len_, save_outputs):
+    def __init__(self, d_model, n_head, len_, save_attention):
         super(Relative_Temporal_SelfAttention, self).__init__()
 
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
@@ -18,7 +18,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
-        self.save_outputs = save_outputs
+        self.save_attention = save_attention
 
         nn.init.xavier_uniform_(self.E)
 
@@ -57,7 +57,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
 
 class Temporal_SelfAttention(nn.Module):
-    def __init__(self, d_model, n_head, save_outputs):
+    def __init__(self, d_model, n_head, save_attention):
         super(Temporal_SelfAttention, self).__init__()
 
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
@@ -66,7 +66,7 @@ class Temporal_SelfAttention(nn.Module):
 
         self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
-        self.save_outputs = save_outputs
+        self.save_attention = save_attention
 
     def forward(self, x, _):
         B, L, _ = x.shape
@@ -93,7 +93,7 @@ class Temporal_SelfAttention(nn.Module):
 
 
 class Geospatial_SelfAttention(nn.Module):
-    def __init__(self, d_model, n_head, save_outputs):
+    def __init__(self, d_model, n_head, save_attention):
         super(Geospatial_SelfAttention, self).__init__()
 
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
@@ -101,7 +101,7 @@ class Geospatial_SelfAttention(nn.Module):
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
         self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
-        self.save_outputs = save_outputs
+        self.save_attention = save_attention
 
     def forward(self, x, key_indices):
         B, L, _ = x.shape
@@ -131,7 +131,7 @@ class Geospatial_SelfAttention(nn.Module):
 
 
 class Spatial_SelfAttention(nn.Module):
-    def __init__(self, d_model, n_head, save_outputs):
+    def __init__(self, d_model, n_head, save_attention):
         super(Spatial_SelfAttention, self).__init__()
 
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
@@ -139,7 +139,7 @@ class Spatial_SelfAttention(nn.Module):
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
         self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
-        self.save_outputs = save_outputs
+        self.save_attention = save_attention
 
     def forward(self, x, key_indices):
         B, L, _ = x.shape
@@ -166,7 +166,7 @@ class Spatial_SelfAttention(nn.Module):
 
 
 class AFTFull(nn.Module):
-    def __init__(self, seq_len, d_model, n_head, save_outputs):
+    def __init__(self, seq_len, d_model, n_head, save_attention):
         super().__init__()
 
         self.n_head = n_head
@@ -175,7 +175,7 @@ class AFTFull(nn.Module):
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
         self.out_projection = nn.Linear(d_model, d_model)
         self.wbias = nn.Parameter(torch.Tensor(seq_len, seq_len))
-        self.save_outputs = save_outputs
+        self.save_attention = save_attention
         nn.init.xavier_uniform_(self.wbias)
 
     def forward(self, x, _):
@@ -201,7 +201,7 @@ class AFTFull(nn.Module):
 
 
 class AFTSimple(nn.Module):
-    def __init__(self, seq_len, d_model, n_head, save_outputs):
+    def __init__(self, seq_len, d_model, n_head, save_attention):
         super().__init__()
 
         self.n_head = n_head
@@ -211,7 +211,7 @@ class AFTSimple(nn.Module):
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
         self.out_projection = nn.Linear(d_model, d_model)
 
-        self.save_outputs = save_outputs
+        self.save_attention = save_attention
 
     def forward(self, x, _):
         B, T, _ = x.shape

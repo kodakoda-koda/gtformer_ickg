@@ -61,10 +61,10 @@ class GTFormer_block(nn.Module):
 
         if args.temporal_mode == "BRPE":
             temporal_selfattention = Relative_Temporal_SelfAttention(
-                args.d_model, args.n_head, args.seq_len + 1, args.save_outputs
+                args.d_model, args.n_head, args.seq_len + 1, args.save_attention
             )
         else:
-            temporal_selfattention = Temporal_SelfAttention(args.d_model, args.n_head, args.save_outputs)
+            temporal_selfattention = Temporal_SelfAttention(args.d_model, args.n_head, args.save_attention)
 
         temporal_encoder_layers = [
             EncoderLayer(
@@ -81,13 +81,13 @@ class GTFormer_block(nn.Module):
         self.spatial_embedding = TokenEmbedding_spatial(args.seq_len + 1, args.d_model)
 
         if args.spatial_mode == "KVR":
-            spatial_selfattention = Geospatial_SelfAttention(args.d_model, args.n_head, args.save_outputs)
+            spatial_selfattention = Geospatial_SelfAttention(args.d_model, args.n_head, args.save_attention)
         elif args.spatial_mode == "AFT":
-            # spatial_selfattention = AFTFull(args.num_tiles**2, args.d_model, args.n_head, args.save_outputs)
-            spatial_selfattention = AFTSimple(args.num_tiles**2, args.d_model, args.n_head, args.save_outputs)
+            # spatial_selfattention = AFTFull(args.num_tiles**2, args.d_model, args.n_head, args.save_attention)
+            spatial_selfattention = AFTSimple(args.num_tiles**2, args.d_model, args.n_head, args.save_attention)
 
         else:
-            spatial_selfattention = Spatial_SelfAttention(args.d_model, args.n_head, args.save_outputs)
+            spatial_selfattention = Spatial_SelfAttention(args.d_model, args.n_head, args.save_attention)
 
         spatial_encoder_layers = [
             EncoderLayer(
