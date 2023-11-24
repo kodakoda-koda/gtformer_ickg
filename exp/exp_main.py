@@ -70,9 +70,9 @@ class Exp_Main(Exp_Basic):
                 else:
                     outputs = self.model(batch_x, param)
 
-                mse_loss = mse_criterion(outputs, batch_y)
+                rmse_loss = torch.sqrt(mse_criterion(outputs, batch_y))
                 mae_loss = mae_criterion(outputs, batch_y)
-                loss = mse_loss + mae_loss
+                loss = rmse_loss + mae_loss
                 train_loss.append(loss.item())
 
                 loss.backward()
@@ -101,7 +101,7 @@ class Exp_Main(Exp_Basic):
         vali_loader = data_provider("val", self.args, od_matrix)
         total_loss = []
         mse_criterion = nn.MSELoss()
-        mae_criterion = nn.L1loss()
+        mae_criterion = nn.L1Loss()
         self.model.eval()
 
         with torch.no_grad():
@@ -114,9 +114,9 @@ class Exp_Main(Exp_Basic):
                 else:
                     outputs = self.model(batch_x, param)
 
-                mse_loss = mse_criterion(outputs, batch_y)
+                rmse_loss = torch.sqrt(mse_criterion(outputs, batch_y))
                 mae_loss = mae_criterion(outputs, batch_y)
-                loss = mse_loss + mae_loss
+                loss = rmse_loss + mae_loss
 
                 total_loss.append(loss.item())
         total_loss = np.average(total_loss)
