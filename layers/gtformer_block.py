@@ -36,15 +36,13 @@ class EncoderLayer(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, enc_layers, norm_layer):
+    def __init__(self, enc_layer, norm_layer):
         super(Encoder, self).__init__()
-        self.enc_layers = nn.ModuleList(enc_layers)
+        self.enc_layer = enc_layer
         self.norm = norm_layer
 
     def forward(self, x, key_indices):
-        for enc_layer in self.enc_layers:
-            x, A = enc_layer(x, key_indices)
-
+        x, A = self.enc_layer(x, key_indices)
         x = self.norm(x)
 
         return x, A
@@ -56,59 +54,68 @@ class GTFormer_block(nn.Module):
 
         self.args = args
 
-        # Temporal Transformer Block
-        self.temporal_embedding = TokenEmbedding_temporal(args.num_tiles**2, args.d_model)
+        if args.use_only != "spatial":
+            # Temporal Transformer Block
+            self.temporal_embedding = TokenEmbedding_temporal(args.num_tiles**2, args.d_model)
 
-        if args.temporal_mode == "BRPE":
-            temporal_selfattention = Relative_Temporal_SelfAttention(
-                args.d_model, args.n_head, args.seq_len + 1, args.save_attention
-            )
-        else:
-            temporal_selfattention = Temporal_SelfAttention(args.d_model, args.n_head, args.save_attention)
+            if args.temporal_mode == "BRPE":
+                temporal_selfattention = Relative_Temporal_SelfAttention(
+                    args.d_model, args.n_head, args.seq_len + 1, args.save_attention
+                )
+            else:
+                temporal_selfattention = Temporal_SelfAttention(args.d_model, args.n_head, args.save_attention)
 
-        temporal_encoder_layers = [
-            EncoderLayer(
+            temporal_encoder_layer = EncoderLayer(
                 attention=temporal_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
-            for _ in range(args.temporal_num_layers)
-        ]
 
-        temporal_norm = nn.LayerNorm(args.d_model)
-        self.temporal_transformer_encoder = Encoder(temporal_encoder_layers, temporal_norm)
-        self.temporal_linear = nn.Linear(args.d_model, args.num_tiles**2)
+            temporal_norm = nn.LayerNorm(args.d_model)
+            self.temporal_transformer_encoder = Encoder(temporal_encoder_layer, temporal_norm)
+            self.temporal_linear = nn.Linear(args.d_model, args.num_tiles**2)
 
-        # Geospatial Transformer Block
-        self.spatial_embedding = TokenEmbedding_spatial(args.seq_len + 1, args.d_model)
+        if args.use_only != "temporal":
+            # Geospatial Transformer Block
+            self.spatial_embedding = TokenEmbedding_spatial(args.seq_len + 1, args.d_model)
 
-        if args.spatial_mode == "KVR":
-            spatial_selfattention = Geospatial_SelfAttention(args.d_model, args.n_head, args.save_attention)
-        elif args.spatial_mode == "AFT":
-            # spatial_selfattention = AFTFull(args.num_tiles**2, args.d_model, args.n_head, args.save_attention)
-            spatial_selfattention = AFTSimple(args.num_tiles**2, args.d_model, args.n_head, args.save_attention)
+            if args.spatial_mode == "AFT-full":
+                spatial_selfattention = AFTFull(args.num_tiles**2, args.d_model, args.n_head, args.save_attention)
+            elif args.spatial_mode == "AFT-simple":
+                spatial_selfattention = AFTSimple(args.num_tiles**2, args.d_model, args.n_head, args.save_attention)
+            else:
+                spatial_selfattention = Spatial_SelfAttention(args.d_model, args.n_head, args.save_attention)
 
-        else:
-            spatial_selfattention = Spatial_SelfAttention(args.d_model, args.n_head, args.save_attention)
-
-        spatial_encoder_layers = [
-            EncoderLayer(
+            spatial_encoder_layer = EncoderLayer(
                 attention=spatial_selfattention, d_model=args.d_model, d_ff=args.d_model * 4, dropout=args.dropout
             )
-            for _ in range(args.spatial_num_layers)
-        ]
 
-        spatial_norm = nn.LayerNorm(args.d_model)
-        self.spatial_transformer_encoder = Encoder(spatial_encoder_layers, spatial_norm)
-        self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
+            spatial_norm = nn.LayerNorm(args.d_model)
+            self.spatial_transformer_encoder = Encoder(spatial_encoder_layer, spatial_norm)
+            self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
 
     def forward(self, X, key_indices):
-        temp_in = self.temporal_embedding(X)
-        temp_out, A_temporal = self.temporal_transformer_encoder(temp_in, key_indices)
-        temp_out = self.temporal_linear(temp_out)
+        if self.args.use_only == "temporal":
+            temp_in = self.temporal_embedding(X)
+            temp_out, A_temporal = self.temporal_transformer_encoder(temp_in, key_indices)
+            out = self.temporal_linear(temp_out)
 
-        spat_in = self.spatial_embedding(X.permute(0, 2, 1))
-        spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
-        spat_out = self.spatial_linear(spat_out)
+            return out
 
-        out = temp_out + spat_out.permute(0, 2, 1)
+        elif self.args.use_only == "spatial":
+            spat_in = self.spatial_embedding(X.permute(0, 2, 1))
+            spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
+            out = self.spatial_linear(spat_out).permute(0, 2, 1)
 
-        return out, A_temporal, A_spatial
+            return out
+
+        else:
+            temp_in = self.temporal_embedding(X)
+            temp_out, A_temporal = self.temporal_transformer_encoder(temp_in, key_indices)
+            temp_out = self.temporal_linear(temp_out)
+
+            spat_in = self.spatial_embedding(X.permute(0, 2, 1))
+            spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
+            spat_out = self.spatial_linear(spat_out)
+
+            out = temp_out + spat_out.permute(0, 2, 1)
+
+            return out, A_temporal, A_spatial

@@ -212,12 +212,15 @@ class Exp_Main(Exp_Basic):
         if self.args.save_attention:
             if not os.path.exists(save_path + f"/{itr}"):
                 os.makedirs(save_path + f"/{itr}")
-            np.save(save_path + f"/{itr}/" + "od_preds.npy", preds)
-            np.save(save_path + f"/{itr}/" + "od_trues.npy", trues)
-            np.save(save_path + f"/{itr}/" + "io_preds.npy", preds_map)
-            np.save(save_path + f"/{itr}/" + "io_trues.npy", trues_map)
-            if self.args.model == "GTFormer":
-                np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().detach().numpy())
-                np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().detach().numpy())
+            np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().detach().numpy())
+            np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().detach().numpy())
+
+        if self.args.save_outputs:
+            if not os.path.exists(save_path + f"/{itr}"):
+                os.makedirs(save_path + f"/{itr}")
+            np.save(save_path + f"/{itr}/" + "trues.npy", trues.cpu().detach().numpy())
+            np.save(save_path + f"/{itr}/" + "preds.npy", preds.cpu().detach().numpy())
+            np.save(save_path + f"/{itr}/" + "trues_map.npy", trues_map.cpu().detach().numpy())
+            np.save(save_path + f"/{itr}/" + "preds_map.npy", preds_map.cpu().detach().numpy())
 
         return

@@ -195,7 +195,7 @@ class AFTFull(nn.Module):
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
         if self.save_attention:
-            return self.out_projection(out), None
+            return self.out_projection(out), temp_wbias
         else:
             return self.out_projection(out), None
 

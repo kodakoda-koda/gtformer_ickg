@@ -26,7 +26,10 @@ class Model(nn.Module):
         X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).view(B, L + 1, O * D)
 
         for block in self.blocks:
-            X, A_temporal, A_spatial = block(X, key_indices)
+            if self.args.use_only in ["temporal", "spatial"]:
+                X = block(X, key_indices)
+            else:
+                X, A_temporal, A_spatial = block(X, key_indices)
 
         out = self.out_linear(X)
         out = out.view(B, L + 1, O, D)

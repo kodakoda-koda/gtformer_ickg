@@ -21,30 +21,40 @@ def main():
     parser.add_argument("--path", type=str, default=".", help="current directory")
     parser.add_argument("--model", type=str, default="GTFormer", help="model name")
     parser.add_argument("--sample_time", type=str, default="60min", help="sample time")
-    parser.add_argument("--tile_size", type=str, default="1000m", help="tile size")
+    parser.add_argument("--tile_size", type=str, default=None, help="tile size")
 
     parser.add_argument("--itrs", type=int, default=1, help="number of run")
     parser.add_argument("--train_epochs", type=int, default=150, help="epochs")  # 30 GTFormer 150 CrowdNet
-    parser.add_argument("--patience", type=int, default=5, help="patience of early stopping")
+    parser.add_argument("--patience", type=int, default=10, help="patience of early stopping")
     parser.add_argument("--batch_size", type=int, default=16, help="batch size")
     parser.add_argument("--seq_len", type=int, default=11, help="input sequence length")
     parser.add_argument("--lr", type=int, default=1e-04, help="learning rate")
-    parser.add_argument("--save_attention", type=bool, default=False, help="save")
     parser.add_argument("--city", type=str, default="NYC", help="city name")
     parser.add_argument("--data_type", type=str, default="Bike", help="data type")
-    parser.add_argument("--num_tiles", type=int, default=55, help="number of tiles")  # set 55 for NYC, 68 for DC
+    parser.add_argument("--num_tiles", type=int, default=None, help="number of tiles")
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
+    parser.add_argument("--save_outputs", type=bool, default=False, help="save outputs")
 
     # GTFormer config
     parser.add_argument("--d_model", type=int, default=64)
     parser.add_argument("--n_head", type=int, default=8)
-    parser.add_argument("--temporal_num_layers", type=int, default=2)
-    parser.add_argument("--spatial_num_layers", type=int, default=1)
     parser.add_argument("--num_blocks", type=int, default=2)
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
-    parser.add_argument("--spatial_mode", type=str, default="AFT", help='["AFT", "KVR", "None"]')
+    parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-full", "AFT-simple", "None"]')
+    parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
 
     args = parser.parse_args(args=[])
+
+    if args.city == "NYC":
+        if args.data_type == "Bike":
+            args.num_tiles = 55
+            args.tile_size = "1000m"
+        else:
+            args.num_tiles = 99
+            args.tile_size = "5000m"
+    else:
+        args.num_tiles = 68
+        args.tile_size = "2000m"
 
     dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
     if not os.path.exists(dataset_directory):
