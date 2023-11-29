@@ -16,7 +16,7 @@ class Model(nn.Module):
 
         self.out_linear = nn.Linear(args.num_tiles**2, args.num_tiles**2)
 
-    def forward(self, X, key_indices):
+    def forward(self, X, _):
         # B: batch size
         # L: sequence length
         # O: num origin
@@ -27,9 +27,9 @@ class Model(nn.Module):
 
         for block in self.blocks:
             if self.args.use_only in ["temporal", "spatial"]:
-                X = block(X, key_indices)
+                X = block(X)
             else:
-                X, A_temporal, A_spatial = block(X, key_indices)
+                X, A_temporal, A_spatial = block(X)
 
         out = self.out_linear(X)
         out = out.view(B, L + 1, O, D)

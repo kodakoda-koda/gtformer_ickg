@@ -92,28 +92,28 @@ class GTFormer_block(nn.Module):
             self.spatial_transformer_encoder = Encoder(spatial_encoder_layer, spatial_norm)
             self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
 
-    def forward(self, X, key_indices):
+    def forward(self, X):
         if self.args.use_only == "temporal":
             temp_in = self.temporal_embedding(X)
-            temp_out, A_temporal = self.temporal_transformer_encoder(temp_in, key_indices)
+            temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
             out = self.temporal_linear(temp_out)
 
             return out
 
         elif self.args.use_only == "spatial":
             spat_in = self.spatial_embedding(X.permute(0, 2, 1))
-            spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
+            spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
             out = self.spatial_linear(spat_out).permute(0, 2, 1)
 
             return out
 
         else:
             temp_in = self.temporal_embedding(X)
-            temp_out, A_temporal = self.temporal_transformer_encoder(temp_in, key_indices)
+            temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
             temp_out = self.temporal_linear(temp_out)
 
             spat_in = self.spatial_embedding(X.permute(0, 2, 1))
-            spat_out, A_spatial = self.spatial_transformer_encoder(spat_in, key_indices)
+            spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
             spat_out = self.spatial_linear(spat_out)
 
             out = temp_out + spat_out.permute(0, 2, 1)

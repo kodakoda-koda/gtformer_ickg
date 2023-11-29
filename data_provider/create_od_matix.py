@@ -48,19 +48,6 @@ def create_od_matrix(dataset_directory, args):
         scaler = MinMaxScaler()
         od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
 
-    # Get indices of M in KVR for GTFformer
-    if args.model == "GTFormer":
-        key_indices = []
-        for i in range(args.num_tiles**2):
-            index = []
-            start = i // args.num_tiles
-            end = i % args.num_tiles
-            for j in range(args.num_tiles):
-                index.append(start * args.num_tiles + j)
-                index.append(end + args.num_tiles * j)
-            index.remove(i)
-            key_indices.append(sorted(index))
-
     # Get adjacency matrix for CrowdNet
     elif args.model == "CrowdNet":
         A = od_matrix.sum(0)
@@ -84,7 +71,7 @@ def create_od_matrix(dataset_directory, args):
     empty_indices = [i for i, x in enumerate((od_sum == 0).all(1)) if x]
 
     if args.model == "GTFormer":
-        return od_matrix, min_tile_id, empty_indices, scaler, key_indices
+        return od_matrix, min_tile_id, empty_indices, scaler, NotImplemented
     elif args.model == "CrowdNet":
         return od_matrix, min_tile_id, empty_indices, None, A_hat
     elif args.model == "GEML":

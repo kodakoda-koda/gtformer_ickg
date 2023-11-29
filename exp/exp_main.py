@@ -2,6 +2,7 @@ import os
 import time
 
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.metrics import mean_absolute_error, mean_squared_error
@@ -186,41 +187,44 @@ class Exp_Main(Exp_Basic):
         print("MAE Error test: ", io_mae_test)
 
         # Write results
-        self.args.path = "/content/drive/MyDrive/2023_Kodama"
-        if self.args.model == "GTFormer":
-            save_path = os.path.join(
-                self.args.path
-                + "/results_data/"
-                + f"/{self.args.city}_{self.args.data_type}_{self.args.model}_{self.args.spatial_mode}"
-            )
+        if not os.path.exists(self.args.save_path):
+            os.makedirs(self.args.save_path + "/")
+        if not os.path.exists(self.args.save_path + "/results.csv"):
+            results = pd.DataFrame()
         else:
-            save_path = os.path.join(
-                self.args.path + "/results_data/" + f"/{self.args.city}_{self.args.data_type}_{self.args.model}"
-            )
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        f = open(save_path + "/result.txt", "a")
-        f.write(f"args: {self.args} \n")
-        f.write("itr:{} \n".format(itr + 1))
-        f.write("OD flow prediction:   rmse:{}, mae:{} \n".format(od_rmse_test, od_mae_test))
-        f.write("IO flow prediction:   rmse:{}, mae:{} \n".format(io_rmse_test, io_mae_test))
-        f.write("\n")
-        f.write("\n")
-        f.close()
+            results = pd.read_csv(self.args.save_path + "/results.csv")
+        result = {}
+        result["city"] = self.args.city
+        result["data_type"] = self.args.data_type
+        result["model"] = self.args.model
+        if self.args.model == "GTFormer":
+            result["temporal_mode"] = self.args.temporal_mode
+            result["spatial_mode"] = self.args.spatial_mode
+        else:
+            result["temporal_mode"] = "-"
+            result["spatial_mode"] = "-"
+        result["OD_RMSE"] = od_rmse_test
+        result["OD_MAE"] = od_mae_test
+        result["IO_RMSE"] = io_rmse_test
+        result["IO_MAE"] = io_mae_test
+
+        result = pd.DataFrame(result, index=[len(results)])
+        results = pd.concat([results, result], axis=0)
+        results.to_csv(self.args.save_path + "/results.csv", index=False)
 
         # save predictions and true values
         if self.args.save_attention:
-            if not os.path.exists(save_path + f"/{itr}"):
-                os.makedirs(save_path + f"/{itr}")
-            np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().detach().numpy())
-            np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().detach().numpy())
+            if not os.path.exists(self.args.save_path + f"/{itr}"):
+                os.makedirs(self.args.save_path + f"/{itr}")
+            np.save(self.args.save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().detach().numpy())
+            np.save(self.args.save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().detach().numpy())
 
         if self.args.save_outputs:
-            if not os.path.exists(save_path + f"/{itr}"):
-                os.makedirs(save_path + f"/{itr}")
-            np.save(save_path + f"/{itr}/" + "trues.npy", trues.cpu().detach().numpy())
-            np.save(save_path + f"/{itr}/" + "preds.npy", preds.cpu().detach().numpy())
-            np.save(save_path + f"/{itr}/" + "trues_map.npy", trues_map.cpu().detach().numpy())
-            np.save(save_path + f"/{itr}/" + "preds_map.npy", preds_map.cpu().detach().numpy())
+            if not os.path.exists(self.args.save_path + f"/{itr}"):
+                os.makedirs(self.args.save_path + f"/{itr}")
+            np.save(self.args.save_path + f"/{itr}/" + "trues.npy", trues.cpu().detach().numpy())
+            np.save(self.args.save_path + f"/{itr}/" + "preds.npy", preds.cpu().detach().numpy())
+            np.save(self.args.save_path + f"/{itr}/" + "trues_map.npy", trues_map.cpu().detach().numpy())
+            np.save(self.args.save_path + f"/{itr}/" + "preds_map.npy", preds_map.cpu().detach().numpy())
 
         return

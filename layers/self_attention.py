@@ -22,7 +22,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         nn.init.xavier_uniform_(self.E)
 
-    def forward(self, x, _):
+    def forward(self, x):
         B, L, _ = x.shape
         H = self.n_head
 
@@ -68,7 +68,7 @@ class Temporal_SelfAttention(nn.Module):
         self.n_head = n_head
         self.save_attention = save_attention
 
-    def forward(self, x, _):
+    def forward(self, x):
         B, L, _ = x.shape
         H = self.n_head
 
@@ -92,44 +92,6 @@ class Temporal_SelfAttention(nn.Module):
             return self.out_projection(out), None
 
 
-class Geospatial_SelfAttention(nn.Module):
-    def __init__(self, d_model, n_head, save_attention):
-        super(Geospatial_SelfAttention, self).__init__()
-
-        self.query_projection = nn.Linear(d_model, d_model, bias=False)
-        self.key_projection = nn.Linear(d_model, d_model, bias=False)
-        self.value_projection = nn.Linear(d_model, d_model, bias=False)
-        self.out_projection = nn.Linear(d_model, d_model)
-        self.n_head = n_head
-        self.save_attention = save_attention
-
-    def forward(self, x, key_indices):
-        B, L, _ = x.shape
-        H = self.n_head
-
-        queries = self.query_projection(x).view(B, L, H, -1).permute(0, 2, 1, 3)
-        keys = self.key_projection(x).view(B, L, H, -1).permute(0, 2, 1, 3)
-        values = self.value_projection(x).view(B, L, H, -1).permute(0, 2, 1, 3)
-
-        scale = 1.0 / math.sqrt(queries.shape[-1])
-
-        # Attention only to the key corresponding to each query
-        keys_sample = keys[:, :, key_indices, :]
-        values_sample = values[:, :, key_indices, :]
-        scores = torch.einsum("bhlkd,bhlds->bhlks", queries.unsqueeze(-2), keys_sample.transpose(-2, -1))
-
-        A = torch.softmax(scale * scores, dim=-1)
-        V = torch.einsum("bhlks,bhlsd->bhlkd", A, values_sample).squeeze(dim=3)
-        out = V.permute(0, 2, 1, 3).contiguous()
-
-        out = out.view(B, L, -1)
-
-        if self.save_attention:
-            return self.out_projection(out), A.squeeze()
-        else:
-            return self.out_projection(out), None
-
-
 class Spatial_SelfAttention(nn.Module):
     def __init__(self, d_model, n_head, save_attention):
         super(Spatial_SelfAttention, self).__init__()
@@ -141,7 +103,7 @@ class Spatial_SelfAttention(nn.Module):
         self.n_head = n_head
         self.save_attention = save_attention
 
-    def forward(self, x, key_indices):
+    def forward(self, x):
         B, L, _ = x.shape
         H = self.n_head
 
@@ -178,7 +140,7 @@ class AFTFull(nn.Module):
         self.save_attention = save_attention
         nn.init.xavier_uniform_(self.wbias)
 
-    def forward(self, x, _):
+    def forward(self, x):
         B, T, _ = x.shape
         H = self.n_head
 
@@ -213,7 +175,7 @@ class AFTSimple(nn.Module):
 
         self.save_attention = save_attention
 
-    def forward(self, x, _):
+    def forward(self, x):
         B, T, _ = x.shape
         H = self.n_head
 
