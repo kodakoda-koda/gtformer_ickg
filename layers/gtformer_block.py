@@ -6,7 +6,6 @@ from layers.embed import TokenEmbedding_spatial, TokenEmbedding_temporal
 from layers.self_attention import (
     AFTFull,
     AFTSimple,
-    Geospatial_SelfAttention,
     Relative_Temporal_SelfAttention,
     Spatial_SelfAttention,
     Temporal_SelfAttention,
