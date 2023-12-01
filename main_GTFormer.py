@@ -46,6 +46,8 @@ def main():
     parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
 
     args = parser.parse_args(args=[])
+    if args.use_only:
+        args.save_attention = False
 
     if args.city == "NYC":
         if args.data_type == "Bike":

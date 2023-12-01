@@ -42,9 +42,12 @@ def main():
     parser.add_argument("--num_blocks", type=int, default=2)
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
     parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-full", "AFT-simple", "None"]')
+    parser.add_argument("--use_only", type=str, default=None, help='["temporal", "spatial", "None"]')
     parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
 
     args = parser.parse_args(args=[])
+    if args.use_only:
+        args.save_attention = False
 
     if args.city == "NYC":
         if args.data_type == "Bike":
