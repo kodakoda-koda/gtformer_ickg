@@ -23,8 +23,8 @@ class EncoderLayer(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.activation = F.relu
 
-    def forward(self, x, key_indices):
-        new_x, A = self.attention(x, key_indices)
+    def forward(self, x):
+        new_x, A = self.attention(x)
         x = x + self.dropout(new_x)
 
         y = x = self.norm1(x)
@@ -40,8 +40,8 @@ class Encoder(nn.Module):
         self.enc_layer = enc_layer
         self.norm = norm_layer
 
-    def forward(self, x, key_indices):
-        x, A = self.enc_layer(x, key_indices)
+    def forward(self, x):
+        x, A = self.enc_layer(x)
         x = self.norm(x)
 
         return x, A
