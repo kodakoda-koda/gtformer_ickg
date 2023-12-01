@@ -197,6 +197,7 @@ class Exp_Main(Exp_Basic):
         result["city"] = self.args.city
         result["data_type"] = self.args.data_type
         result["model"] = self.args.model
+        result["itr"] = itr
         if self.args.model == "GTFormer":
             result["temporal_mode"] = self.args.temporal_mode
             result["spatial_mode"] = self.args.spatial_mode
