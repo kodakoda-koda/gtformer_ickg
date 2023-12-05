@@ -35,6 +35,8 @@ def create_od_matrix(dataset_directory, args):
     for row in df.itertuples():
         od_matrix[row.dif, int(row.tile_ID_origin), int(row.tile_ID_destination)] = row.flow
 
+    del df
+
     # The diagonal component is not regarded as flow, so it is set to 0
     for i in range(od_matrix.shape[0]):
         np.fill_diagonal(od_matrix[i, :, :], 0)
@@ -71,7 +73,7 @@ def create_od_matrix(dataset_directory, args):
     empty_indices = [i for i, x in enumerate((od_sum == 0).all(1)) if x]
 
     if args.model == "GTFormer":
-        return od_matrix, min_tile_id, empty_indices, scaler, NotImplemented
+        return od_matrix, min_tile_id, empty_indices, scaler, None
     elif args.model == "CrowdNet":
         return od_matrix, min_tile_id, empty_indices, None, A_hat
     elif args.model == "GEML":

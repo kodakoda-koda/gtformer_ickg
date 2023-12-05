@@ -35,6 +35,10 @@ class Exp_Main(Exp_Basic):
         dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
         od_matrix, _, _, _, param = create_od_matrix(dataset_directory, self.args)
         train_loader = data_provider("train", self.args, od_matrix)
+        vali_loader = data_provider("val", self.args, od_matrix)
+
+        del od_matrix
+
         if self.args.model in ["CrowdNet", "GEML"]:
             param = torch.tensor(param).float().to(self.device)
 
@@ -80,7 +84,7 @@ class Exp_Main(Exp_Basic):
                 model_optim.step()
 
             train_loss = np.average(train_loss)
-            vali_loss = self.vali(od_matrix, param)
+            vali_loss = self.vali(vali_loader, param)
 
             my_lr_scheduler.step()
             print(
@@ -98,8 +102,7 @@ class Exp_Main(Exp_Basic):
 
         return
 
-    def vali(self, od_matrix, param):
-        vali_loader = data_provider("val", self.args, od_matrix)
+    def vali(self, vali_loader, param):
         total_loss = []
         mse_criterion = nn.MSELoss()
         mae_criterion = nn.L1Loss()
@@ -128,6 +131,9 @@ class Exp_Main(Exp_Basic):
         dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
         od_matrix, min_tile_id, empty_indices, scaler, param = create_od_matrix(dataset_directory, self.args)
         test_loader = data_provider("test", self.args, od_matrix)
+
+        del od_matrix
+
         if self.args.model in ["CrowdNet", "GEML"]:
             param = torch.tensor(param).float().to(self.device)
 

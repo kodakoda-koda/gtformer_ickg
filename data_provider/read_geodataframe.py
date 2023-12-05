@@ -113,9 +113,30 @@ def load_dataset(city, data_type, tile_size, sample_time, dataset_directory):
             axis=1,
         )
 
+    elif city == "BJ" and data_type == "Taxi":
+        zip_files = [f for f in os.listdir(dataset_directory + "/taxi_log_2008_by_id/") if f.endswith(".txt")]
+        data = [
+            pd.read_table(file_name, sep=",", header=None, names=["ID", "datetime", "longitude", "latitude"])
+            for file_name in zip_files
+        ]
+        data = list(map(up_off, data))
+        df = pd.concat(data)
+        df = df.rename(
+            {
+                "pickup_datetime": "starttime",
+                "dropoff_datetime": "stoptime",
+                "pickup_longitude": "start station longitude",
+                "pickup_latitude": "start station latitude",
+                "dropoff_longitude": "end station longitude",
+                "dropoff_latitude": "end station latitude",
+            },
+            axis=1,
+        )
+        df = df.drop("ID", axis=1)
+
     print("load tessellation")
     # Load tile information
-    tessellation = pd.read_csv(dataset_directory + "Tessellation_" + tile_size + "_" + city + ".csv")
+    tessellation = pd.read_csv("/content/drive/MyDrive/2023_Kodama/raw_data/BJ_Taxi/Tessellation_5000m_BJ.csv")
     tessellation["geometry"] = [shapely.wkt.loads(el) for el in tessellation.geometry]
     tessellation = gpd.GeoDataFrame(tessellation, geometry="geometry")
 
@@ -133,7 +154,11 @@ def load_dataset(city, data_type, tile_size, sample_time, dataset_directory):
     gdf_in = gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df["start station longitude"], df["start station latitude"]), crs="epsg:4326"
     )
+    del df
+
     gdf_in_join = gpd.sjoin(gdf_in, tessellation)
+    del gdf_in
+
     gdf_in_join = gdf_in_join[["starttime", "end station latitude", "end station longitude", "stoptime", "tile_ID"]]
 
     gdf_final = gpd.GeoDataFrame(
@@ -141,7 +166,11 @@ def load_dataset(city, data_type, tile_size, sample_time, dataset_directory):
         geometry=gpd.points_from_xy(gdf_in_join["end station longitude"], gdf_in_join["end station latitude"]),
         crs="epsg:4326",
     )
+    del gdf_in_join
+
     gdf_final_join = gpd.sjoin(gdf_final, tessellation)
+    del gdf_final
+
     gdf_final_join = gdf_final_join[["starttime", "stoptime", "tile_ID_left", "tile_ID_right"]]
 
     gdf_final_join = gdf_final_join.rename(
@@ -159,3 +188,24 @@ def load_dataset(city, data_type, tile_size, sample_time, dataset_directory):
 
     # Saving geodataframe
     gdf_grouped.to_csv(dataset_directory + "df_grouped_" + tile_size + "_" + sample_time + ".csv")
+
+
+def up_off(df):
+    pickup = df
+    pickup["datetime"] = pd.to_datetime(pickup["datetime"])
+    pickup.rename(
+        columns={"datetime": "pickup_datetime", "longitude": "pickup_longitude", "latitude": "pickup_latitude"},
+        inplace=True,
+    )
+
+    dropoff = pickup.shift(-1)
+    dropoff.rename(
+        columns={
+            "pickup_datetime": "dropoff_datetime",
+            "pickup_longitude": "dropoff_longitude",
+            "pickup_latitude": "dropoff_latitude",
+        },
+        inplace=True,
+    )
+    up_off = pd.concat([pickup.iloc[:-1], dropoff.iloc[:-1, 1:]], axis=1)
+    return up_off
