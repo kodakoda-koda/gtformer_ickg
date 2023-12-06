@@ -17,7 +17,7 @@ class Grid_Embedding(nn.Module):
     def forward(self, X, dis_matrix):
         B, L, O, D = X.shape
         sem_neibor = X > 0
-        geo_neibor = dis_matrix <= 3
+        geo_neibor = dis_matrix <= 5
 
         X_ = torch.cat((X, X.permute(0, 1, 3, 2)), dim=-1)
         Y = self.linear(X_)

@@ -46,9 +46,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
 
         A = torch.softmax(scale * (scores + s_rel), dim=-1)
         V = torch.einsum("bhls,bshd->blhd", A, values)
-        out = V.contiguous()
-
-        out = out.view(B, L, -1)
+        out = V.contiguous().view(B, L, -1)
 
         if self.save_attention:
             return self.out_projection(out), A
@@ -82,9 +80,7 @@ class Temporal_SelfAttention(nn.Module):
 
         A = torch.softmax(scale * scores, dim=-1)
         V = torch.einsum("bhls,bshd->blhd", A, values)
-        out = V.contiguous()
-
-        out = out.view(B, L, -1)
+        out = V.contiguous().view(B, L, -1)
 
         if self.save_attention:
             return self.out_projection(out), A
@@ -117,9 +113,7 @@ class Spatial_SelfAttention(nn.Module):
 
         A = torch.softmax(scale * scores, dim=-1)
         V = torch.einsum("bhls,bshd->blhd", A, values)
-        out = V.contiguous()
-
-        out = out.view(B, L, -1)
+        out = V.contiguous().view(B, L, -1)
 
         if self.save_attention:
             return self.out_projection(out), A
@@ -167,9 +161,7 @@ class KVR_Spatial_SelfAttention(nn.Module):
 
         A = torch.softmax(scale * scores, dim=-1)
         V = torch.einsum("bhlks,bhlsd->bhlkd", A, values_sample).squeeze(dim=3)
-        out = V.permute(0, 2, 1, 3).contiguous()
-
-        out = out.view(B, L, -1)
+        out = V.permute(0, 2, 1, 3).contiguous().view(B, L, -1)
 
         if self.save_attention:
             A = A.squeeze()
@@ -253,17 +245,14 @@ class AFTFull(nn.Module):
         queries = self.query_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
         keys = self.key_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
         values = self.value_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
-        temp_wbias = self.wbias[:T, :T].unsqueeze(0).unsqueeze(1)
 
         queries_sig = torch.sigmoid(queries)
-        temp = torch.exp(temp_wbias) @ torch.mul(torch.exp(keys), values)
-        weighted = temp / (torch.exp(temp_wbias) @ torch.exp(keys))
-        out = torch.mul(queries_sig, weighted)
-
-        out = out.permute(0, 2, 1, 3).view(B, T, -1)
+        temp = torch.exp(self.wbias[None, None, :, :]) @ torch.mul(torch.exp(keys), values)
+        weighted = temp / (torch.exp(self.wbias[None, None, :, :]) @ torch.exp(keys))
+        out = torch.mul(queries_sig, weighted).permute(0, 2, 1, 3).view(B, T, -1)
 
         if self.save_attention:
-            return self.out_projection(out), temp_wbias
+            return self.out_projection(out), self.wbias
         else:
             return self.out_projection(out), None
 

@@ -55,17 +55,14 @@ class Exp_Main(Exp_Basic):
             model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
 
         mse_criterion = nn.MSELoss()
-        mae_criterion = nn.L1Loss()
         my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=model_optim, gamma=0.96)
 
         for epoch in range(self.args.train_epochs):
-            iter_count = 0
             train_loss = []
 
             self.model.train()
             epoch_time = time.time()
             for i, (batch_x, batch_y) in enumerate(train_loader):
-                iter_count += 1
                 model_optim.zero_grad()
                 batch_x = batch_x.float().to(self.device)
                 batch_y = batch_y.float().to(self.device)
@@ -75,9 +72,7 @@ class Exp_Main(Exp_Basic):
                 else:
                     outputs = self.model(batch_x, param)
 
-                rmse_loss = torch.sqrt(mse_criterion(outputs, batch_y))
-                mae_loss = mae_criterion(outputs, batch_y)
-                loss = rmse_loss + mae_loss
+                loss = mse_criterion(outputs, batch_y)
                 train_loss.append(loss.item())
 
                 loss.backward()
@@ -105,7 +100,6 @@ class Exp_Main(Exp_Basic):
     def vali(self, vali_loader, param):
         total_loss = []
         mse_criterion = nn.MSELoss()
-        mae_criterion = nn.L1Loss()
         self.model.eval()
 
         with torch.no_grad():
@@ -118,11 +112,9 @@ class Exp_Main(Exp_Basic):
                 else:
                     outputs = self.model(batch_x, param)
 
-                rmse_loss = torch.sqrt(mse_criterion(outputs, batch_y))
-                mae_loss = mae_criterion(outputs, batch_y)
-                loss = rmse_loss + mae_loss
-
+                loss = mse_criterion(outputs, batch_y)
                 total_loss.append(loss.item())
+
         total_loss = np.average(total_loss)
         self.model.train()
         return total_loss
