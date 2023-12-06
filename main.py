@@ -51,14 +51,14 @@ def main():
 
     if args.city == "NYC":
         if args.data_type == "Bike":
-            args.num_tiles = 55
-            args.tile_size = "1000m"
+            args.num_tiles = 55  # 150
+            args.tile_size = "1000m"  # 500m
         else:
             args.num_tiles = 99
             args.tile_size = "5000m"
     else:
-        args.num_tiles = 68
-        args.tile_size = "2000m"
+        args.num_tiles = 68  # 144
+        args.tile_size = "2000m"  # 1000m
 
     dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
     if not os.path.exists(dataset_directory):

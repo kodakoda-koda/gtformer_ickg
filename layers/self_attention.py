@@ -127,8 +127,62 @@ class Spatial_SelfAttention(nn.Module):
             return self.out_projection(out), None
 
 
-class AFTFull(nn.Module):
-    def __init__(self, seq_len, d_model, n_head, save_attention):
+class KVR_Spatial_SelfAttention(nn.Module):
+    def __init__(self, num_tiles, d_model, n_head, save_attention):
+        super(KVR_Spatial_SelfAttention, self).__init__()
+
+        self.query_projection = nn.Linear(d_model, d_model, bias=False)
+        self.key_projection = nn.Linear(d_model, d_model, bias=False)
+        self.value_projection = nn.Linear(d_model, d_model, bias=False)
+        self.out_projection = nn.Linear(d_model, d_model)
+        self.n_head = n_head
+        self.save_attention = save_attention
+
+        key_indices = []
+        for i in range(num_tiles**2):
+            index = []
+            start = i // num_tiles
+            end = i % num_tiles
+            for j in range(num_tiles):
+                index.append(start * num_tiles + j)
+                index.append(end + num_tiles * j)
+            index.remove(i)
+            key_indices.append(sorted(index))
+        self.key_indices = torch.tensor(key_indices)
+
+    def forward(self, x):
+        B, L, _ = x.shape
+        H = self.n_head
+
+        queries = self.query_projection(x).view(B, L, H, -1).permute(0, 2, 1, 3)
+        keys = self.key_projection(x).view(B, L, H, -1).permute(0, 2, 1, 3)
+        values = self.value_projection(x).view(B, L, H, -1).permute(0, 2, 1, 3)
+
+        scale = 1.0 / math.sqrt(queries.shape[-1])
+
+        keys_sample = keys[:, :, self.key_indices, :]
+        values_sample = values[:, :, self.key_indices, :]
+
+        scores = torch.einsum("bhlkd,bhlds->bhlks", queries.unsqueeze(-2), keys_sample.transpose(-2, -1))
+
+        A = torch.softmax(scale * scores, dim=-1)
+        V = torch.einsum("bhlks,bhlsd->bhlkd", A, values_sample).squeeze(dim=3)
+        out = V.permute(0, 2, 1, 3).contiguous()
+
+        out = out.view(B, L, -1)
+
+        if self.save_attention:
+            A = A.squeeze()
+            A_ = torch.zeros((B, H, L, L)).to(self.device)
+            for j in range(L):
+                A_[:, :, j, self.key_indices[j]] = A[:, :, j, :]
+            return self.out_projection(out), A_
+        else:
+            return self.out_projection(out), None
+
+
+class AFTKVR(nn.Module):
+    def __init__(self, num_tiles, d_model, n_head, save_attention):
         super().__init__()
 
         self.n_head = n_head
@@ -136,7 +190,59 @@ class AFTFull(nn.Module):
         self.key_projection = nn.Linear(d_model, d_model, bias=False)
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
         self.out_projection = nn.Linear(d_model, d_model)
-        self.wbias = nn.Parameter(torch.Tensor(seq_len, seq_len))
+        self.wbias = nn.Parameter(torch.Tensor(num_tiles**2, 2 * num_tiles - 1))
+        self.save_attention = save_attention
+
+        key_indices = []
+        for i in range(num_tiles**2):
+            index = []
+            start = i // num_tiles
+            end = i % num_tiles
+            for j in range(num_tiles):
+                index.append(start * num_tiles + j)
+                index.append(end + num_tiles * j)
+            index.remove(i)
+            key_indices.append(sorted(index))
+        self.key_indices = torch.tensor(key_indices)
+
+        nn.init.xavier_uniform_(self.wbias)
+
+    def forward(self, x):
+        B, T, _ = x.shape
+        H = self.n_head
+
+        queries = self.query_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        keys = self.key_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        values = self.value_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        temp_wbias = self.wbias.unsqueeze(0).unsqueeze(1)
+
+        queries_sig = torch.sigmoid(queries)
+        kv = torch.mul(torch.exp(keys), values)[:, :, self.key_indices, :]
+        temp = torch.exp(temp_wbias.unsqueeze(-2)) @ kv
+        weighted = (
+            temp.squeeze()
+            / (torch.exp(temp_wbias.unsqueeze(-2)) @ torch.exp(keys[:, :, self.key_indices, :])).squeeze()
+        )
+        out = torch.mul(queries_sig, weighted)
+
+        out = out.permute(0, 2, 1, 3).view(B, T, -1)
+
+        if self.save_attention:
+            return self.out_projection(out), temp_wbias
+        else:
+            return self.out_projection(out), None
+
+
+class AFTFull(nn.Module):
+    def __init__(self, num_tiles, d_model, n_head, save_attention):
+        super().__init__()
+
+        self.n_head = n_head
+        self.query_projection = nn.Linear(d_model, d_model, bias=False)
+        self.key_projection = nn.Linear(d_model, d_model, bias=False)
+        self.value_projection = nn.Linear(d_model, d_model, bias=False)
+        self.out_projection = nn.Linear(d_model, d_model)
+        self.wbias = nn.Parameter(torch.Tensor(num_tiles**2, num_tiles**2))
         self.save_attention = save_attention
         nn.init.xavier_uniform_(self.wbias)
 
@@ -144,15 +250,15 @@ class AFTFull(nn.Module):
         B, T, _ = x.shape
         H = self.n_head
 
-        Q = self.query_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
-        K = self.key_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
-        V = self.value_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        queries = self.query_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        keys = self.key_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        values = self.value_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
         temp_wbias = self.wbias[:T, :T].unsqueeze(0).unsqueeze(1)
 
-        Q_sig = torch.sigmoid(Q)
-        temp = torch.exp(temp_wbias) @ torch.mul(torch.exp(K), V)
-        weighted = temp / (torch.exp(temp_wbias) @ torch.exp(K))
-        out = torch.mul(Q_sig, weighted)
+        queries_sig = torch.sigmoid(queries)
+        temp = torch.exp(temp_wbias) @ torch.mul(torch.exp(keys), values)
+        weighted = temp / (torch.exp(temp_wbias) @ torch.exp(keys))
+        out = torch.mul(queries_sig, weighted)
 
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
@@ -163,7 +269,7 @@ class AFTFull(nn.Module):
 
 
 class AFTSimple(nn.Module):
-    def __init__(self, seq_len, d_model, n_head, save_attention):
+    def __init__(self, num_tiles, d_model, n_head, save_attention):
         super().__init__()
 
         self.n_head = n_head
@@ -179,13 +285,13 @@ class AFTSimple(nn.Module):
         B, T, _ = x.shape
         H = self.n_head
 
-        Q = self.query_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
-        K = self.key_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
-        V = self.value_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        queries = self.query_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        keys = self.key_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
+        values = self.value_projection(x).view(B, T, H, -1).permute(0, 2, 1, 3)
 
-        weights = torch.mul(torch.softmax(K, 1), V).sum(dim=1, keepdim=True)
-        Q_sig = torch.sigmoid(Q)
-        out = torch.mul(Q_sig, weights)
+        weights = torch.mul(torch.softmax(keys, 1), values).sum(dim=1, keepdim=True)
+        queries_sig = torch.sigmoid(queries)
+        out = torch.mul(queries_sig, weights)
 
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
