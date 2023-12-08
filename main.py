@@ -15,7 +15,7 @@ def main():
     torch.manual_seed(fix_seed)
     np.random.seed(fix_seed)
 
-    parser = argparse.ArgumentParser(description="Crowd Prediction")
+    parser = argparse.ArgumentParser()
 
     # exp config
     parser.add_argument("--path", type=str, default=".", help="current directory")
@@ -46,7 +46,7 @@ def main():
     parser.add_argument("--connection", type=str, default="parallel", help='["parallel", "series_t", "series_s"]')
     parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
 
-    args = parser.parse_args(args=[])
+    args = parser.parse_args()
     if args.use_only:
         args.save_attention = False
 
