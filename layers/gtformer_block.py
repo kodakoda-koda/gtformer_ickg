@@ -115,14 +115,37 @@ class GTFormer_block(nn.Module):
             return out
 
         else:
-            temp_in = self.temporal_embedding(X)
-            temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
-            temp_out = self.temporal_linear(temp_out)
+            if self.args.connection == "parallel":
+                temp_in = self.temporal_embedding(X)
+                temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
+                temp_out = self.temporal_linear(temp_out)
 
-            spat_in = self.spatial_embedding(X.permute(0, 2, 1))
-            spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
-            spat_out = self.spatial_linear(spat_out)
+                spat_in = self.spatial_embedding(X.permute(0, 2, 1))
+                spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
+                spat_out = self.spatial_linear(spat_out)
 
-            out = temp_out + spat_out.permute(0, 2, 1)
+                out = temp_out + spat_out.permute(0, 2, 1)
 
-            return out, A_temporal, A_spatial
+                return out, A_temporal, A_spatial
+
+            elif self.args.connection == "series_t":
+                temp_in = self.temporal_embedding(X)
+                temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
+                temp_out = self.temporal_linear(temp_out)
+
+                spat_in = self.spatial_embedding(temp_out.permute(0, 2, 1))
+                spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
+                out = self.spatial_linear(spat_out)
+
+                return out.permute(0, 2, 1), A_temporal, A_spatial
+
+            else:
+                spat_in = self.spatial_embedding(X.permute(0, 2, 1))
+                spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
+                spat_out = self.spatial_linear(spat_out)
+
+                temp_in = self.temporal_embedding(spat_out.permute(0, 2, 1))
+                temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
+                out = self.temporal_linear(temp_out)
+
+                return out, A_temporal, A_spatial

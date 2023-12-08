@@ -43,6 +43,7 @@ def main():
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
     parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-full", "AFT-simple", "None"]')
     parser.add_argument("--use_only", type=str, default=None, help='["temporal", "spatial", "None"]')
+    parser.add_argument("--connection", type=str, default="parallel", help='["parallel", "series_t", "series_s"]')
     parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
 
     args = parser.parse_args(args=[])
@@ -57,8 +58,8 @@ def main():
             args.num_tiles = 99
             args.tile_size = "5000m"
     else:
-        args.num_tiles = 68  # 144
-        args.tile_size = "2000m"  # 1000m
+        args.num_tiles = 144  # 144
+        args.tile_size = "1000m"  # 1000m
 
     dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
     if not os.path.exists(dataset_directory):
