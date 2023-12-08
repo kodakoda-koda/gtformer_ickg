@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from layers.gtformer_block_ import GTFormer_block
+from layers.gtformer_block import GTFormer_block
 
 
 class Model(nn.Module):
