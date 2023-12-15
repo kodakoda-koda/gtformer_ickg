@@ -200,10 +200,12 @@ class Exp_Main(Exp_Basic):
             result["temporal_mode"] = self.args.temporal_mode
             result["spatial_mode"] = self.args.spatial_mode
             result["use_only"] = self.args.use_only
+            result["connection"] = self.args.connection
         else:
             result["temporal_mode"] = "-"
             result["spatial_mode"] = "-"
             result["use_only"] = "-"
+            result["connection"] = "-"
         result["OD_RMSE"] = od_rmse_test
         result["OD_MAE"] = od_mae_test
         result["IO_RMSE"] = io_rmse_test
