@@ -45,7 +45,7 @@ def main():
         "--spatial_mode", type=str, default="AFT-simple", help='["AFT-KVR", "AFT-full", "AFT-simple", "None"]'
     )
     parser.add_argument("--use_only", type=str, default=None, help='["temporal", "spatial", "None"]')
-    parser.add_argument("--connection", type=str, default="series_t", help='["parallel", "series_t", "series_s"]')
+    parser.add_argument("--connection", type=str, default="parallel", help='["parallel", "series_t", "series_s"]')
     parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
 
     args = parser.parse_args()
