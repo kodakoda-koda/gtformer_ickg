@@ -1,8 +1,8 @@
 #!/bin/bash
 
-MODEL = ("AR" "LSTM" "GEML" "CrowdNet" "GTFormer")
+MODEL=("AR" "LSTM" "GEML" "CrowdNet" "GTFormer")
 
-for model in MODEL
+for model in ${MODEL[@]}
 do
 
 python main.py --model $model --city DC --data_type Bike
