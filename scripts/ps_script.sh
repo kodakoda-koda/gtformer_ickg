@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PS = ("parallel" "series_t" "series_s")
 

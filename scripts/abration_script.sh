@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ONLY = ("temporal" "spatial")
 for only in ONLY

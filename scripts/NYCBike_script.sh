@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 MODEL = ("AR" "LSTM" "GEML" "CrowdNet" "GTFormer")
 

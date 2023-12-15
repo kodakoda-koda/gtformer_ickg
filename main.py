@@ -71,10 +71,14 @@ def main():
 
     print("Args in experiment:")
     print(
-        f"model: {args.model}, city: {args.city}, data type: {args.data_type}, sample time: {args.sample_time}, tile size: {args.tile_size}, num tiles: {args.num_tiles}"
+        f"model: {args.model}, city: {args.city}, data type: {args.data_type}, sample time: {args.sample_time}, "
+        f"tile size: {args.tile_size}, num tiles: {args.num_tiles}"
     )
     if args.model == "GTFormer":
-        print(f"num_blocks: {args.num_blocks}, temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}")
+        print(
+            f"temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}, use_only: {args.use_only}, "
+            f"connection: {args.connection}"
+        )
 
     Exp = Exp_Main
 
