@@ -8,7 +8,7 @@ python main.py --use_only $only
 
 done
 
-S_MODE = ("AFT-simple" "AFT-sull")
+S_MODE = ("AFT-simple" "AFT-full" "None")
 for s_mode in S_MODE
 do
 
@@ -16,7 +16,7 @@ python main.py --spatial_mode $s_mode
 
 done
 
-T_MODE = ("BPRE")
+T_MODE = ("BPRE" "None")
 for t_mode in T_MODE
 do
 

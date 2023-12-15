@@ -16,7 +16,6 @@ class Relative_Temporal_SelfAttention(nn.Module):
         self.E = nn.Parameter(torch.Tensor(n_head, d_model // n_head, len_))
         # self.e_projection = nn.Linear(d_model // n_head, len_, bias=False)
 
-        self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
         self.save_attention = save_attention
 
@@ -49,9 +48,9 @@ class Relative_Temporal_SelfAttention(nn.Module):
         out = V.contiguous().view(B, L, -1)
 
         if self.save_attention:
-            return self.out_projection(out), A
+            return out, A
         else:
-            return self.out_projection(out), None
+            return out, None
 
 
 class Temporal_SelfAttention(nn.Module):
@@ -62,7 +61,6 @@ class Temporal_SelfAttention(nn.Module):
         self.key_projection = nn.Linear(d_model, d_model, bias=False)
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
 
-        self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
         self.save_attention = save_attention
 
@@ -83,9 +81,9 @@ class Temporal_SelfAttention(nn.Module):
         out = V.contiguous().view(B, L, -1)
 
         if self.save_attention:
-            return self.out_projection(out), A
+            return out, A
         else:
-            return self.out_projection(out), None
+            return out, None
 
 
 class Spatial_SelfAttention(nn.Module):
@@ -95,7 +93,6 @@ class Spatial_SelfAttention(nn.Module):
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
         self.key_projection = nn.Linear(d_model, d_model, bias=False)
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
-        self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
         self.save_attention = save_attention
 
@@ -116,9 +113,9 @@ class Spatial_SelfAttention(nn.Module):
         out = V.contiguous().view(B, L, -1)
 
         if self.save_attention:
-            return self.out_projection(out), A
+            return out, A
         else:
-            return self.out_projection(out), None
+            return out, None
 
 
 class KVR_Spatial_SelfAttention(nn.Module):
@@ -128,7 +125,6 @@ class KVR_Spatial_SelfAttention(nn.Module):
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
         self.key_projection = nn.Linear(d_model, d_model, bias=False)
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
-        self.out_projection = nn.Linear(d_model, d_model)
         self.n_head = n_head
         self.save_attention = save_attention
 
@@ -168,9 +164,9 @@ class KVR_Spatial_SelfAttention(nn.Module):
             A_ = torch.zeros((B, H, L, L)).to(self.device)
             for j in range(L):
                 A_[:, :, j, self.key_indices[j]] = A[:, :, j, :]
-            return self.out_projection(out), A_
+            return out, A_
         else:
-            return self.out_projection(out), None
+            return out, None
 
 
 class AFTKVR(nn.Module):
@@ -181,7 +177,6 @@ class AFTKVR(nn.Module):
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
         self.key_projection = nn.Linear(d_model, d_model, bias=False)
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
-        self.out_projection = nn.Linear(d_model, d_model)
         self.wbias = nn.Parameter(torch.Tensor(num_tiles**2, 2 * num_tiles - 1))
         self.save_attention = save_attention
 
@@ -220,9 +215,9 @@ class AFTKVR(nn.Module):
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
         if self.save_attention:
-            return self.out_projection(out), temp_wbias
+            return out, temp_wbias
         else:
-            return self.out_projection(out), None
+            return out, None
 
 
 class AFTFull(nn.Module):
@@ -233,7 +228,6 @@ class AFTFull(nn.Module):
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
         self.key_projection = nn.Linear(d_model, d_model, bias=False)
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
-        self.out_projection = nn.Linear(d_model, d_model)
         self.wbias = nn.Parameter(torch.Tensor(num_tiles**2, num_tiles**2))
         self.save_attention = save_attention
         nn.init.xavier_uniform_(self.wbias)
@@ -252,9 +246,9 @@ class AFTFull(nn.Module):
         out = torch.mul(queries_sig, weighted).permute(0, 2, 1, 3).view(B, T, -1)
 
         if self.save_attention:
-            return self.out_projection(out), self.wbias
+            return out, self.wbias
         else:
-            return self.out_projection(out), None
+            return out, None
 
 
 class AFTSimple(nn.Module):
@@ -266,7 +260,6 @@ class AFTSimple(nn.Module):
         self.query_projection = nn.Linear(d_model, d_model, bias=False)
         self.key_projection = nn.Linear(d_model, d_model, bias=False)
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
-        self.out_projection = nn.Linear(d_model, d_model)
 
         self.save_attention = save_attention
 
@@ -285,6 +278,6 @@ class AFTSimple(nn.Module):
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
         if self.save_attention:
-            return self.out_projection(out), None
+            return out, None
         else:
-            return self.out_projection(out), None
+            return out, None
