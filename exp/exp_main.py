@@ -148,8 +148,8 @@ class Exp_Main(Exp_Basic):
                 else:
                     outputs = self.model(batch_x, param)
 
-                preds.append(outputs.cpu().detach().numpy())
-                trues.append(batch_y.cpu().detach().numpy())
+                preds.append(outputs.cpu().float().detach().numpy())
+                trues.append(batch_y.cpu().float().detach().numpy())
 
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
@@ -220,9 +220,9 @@ class Exp_Main(Exp_Basic):
         if self.args.save_attention:
             if not os.path.exists(self.args.save_path + f"/{itr}"):
                 os.makedirs(self.args.save_path + f"/{itr}")
-            np.save(self.args.save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().detach().numpy())
+            np.save(self.args.save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().float().detach().numpy())
             if not self.args.spatial_mode == "AFT-simple":
-                np.save(self.args.save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().detach().numpy())
+                np.save(self.args.save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().float().detach().numpy())
 
         if self.args.save_outputs:
             if not os.path.exists(self.args.save_path + f"/{itr}"):
