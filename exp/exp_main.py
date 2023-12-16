@@ -27,7 +27,7 @@ class Exp_Main(Exp_Basic):
             "LSTM": LSTM,
             "AR": AR,
         }
-        model = model_dict[self.args.model].Model(self.args).float()
+        model = model_dict[self.args.model].Model(self.args).to(torch.bfloat16)
 
         return model
 
@@ -40,7 +40,7 @@ class Exp_Main(Exp_Basic):
         del od_matrix
 
         if self.args.model in ["CrowdNet", "GEML"]:
-            param = torch.tensor(param).float().to(self.device)
+            param = torch.tensor(param).to(torch.bfloat16).to(self.device)
 
         path = os.path.join(self.args.path + f"/checkpoints_{self.args.model}/")
         if not os.path.exists(path):
@@ -64,8 +64,8 @@ class Exp_Main(Exp_Basic):
             epoch_time = time.time()
             for i, (batch_x, batch_y) in enumerate(train_loader):
                 model_optim.zero_grad()
-                batch_x = batch_x.float().to(self.device)
-                batch_y = batch_y.float().to(self.device)
+                batch_x = batch_x.to(torch.bfloat16).to(self.device)
+                batch_y = batch_y.to(torch.bfloat16).to(self.device)
 
                 if self.args.save_attention:
                     outputs, _, _ = self.model(batch_x, param)
@@ -104,8 +104,8 @@ class Exp_Main(Exp_Basic):
 
         with torch.no_grad():
             for i, (batch_x, batch_y) in enumerate(vali_loader):
-                batch_x = batch_x.float().to(self.device)
-                batch_y = batch_y.float().to(self.device)
+                batch_x = batch_x.to(torch.bfloat16).to(self.device)
+                batch_y = batch_y.to(torch.bfloat16).to(self.device)
 
                 if self.args.save_attention:
                     outputs, _, _ = self.model(batch_x, param)
@@ -127,7 +127,7 @@ class Exp_Main(Exp_Basic):
         del od_matrix
 
         if self.args.model in ["CrowdNet", "GEML"]:
-            param = torch.tensor(param).float().to(self.device)
+            param = torch.tensor(param).to(torch.bfloat16).to(self.device)
 
         self.model.load_state_dict(
             torch.load(os.path.join(self.args.path + f"/checkpoints_{self.args.model}/" + "checkpoint.pth"))
@@ -140,8 +140,8 @@ class Exp_Main(Exp_Basic):
 
         with torch.no_grad():
             for i, (batch_x, batch_y) in enumerate(test_loader):
-                batch_x = batch_x.float().to(self.device)
-                batch_y = batch_y.float().to(self.device)
+                batch_x = batch_x.to(torch.bfloat16).to(self.device)
+                batch_y = batch_y.to(torch.bfloat16).to(self.device)
 
                 if self.args.save_attention:
                     outputs, A_temporal, A_spatial = self.model(batch_x, param)
