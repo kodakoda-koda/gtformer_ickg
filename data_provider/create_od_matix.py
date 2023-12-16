@@ -19,7 +19,7 @@ def create_od_matrix(dataset_directory, args):
     df["start"] = pd.to_datetime(df["start"])
     df["starttime"] = pd.to_datetime(df["starttime"])
     df["dif"] = df["starttime"] - df["start"]
-    df["dif"] = df["dif"].dt.total_seconds().round() / (minite * 60)
+    df["dif"] = df["dif"].dt.total_seconds().round() // (minite * 60)
     df["dif"] = df["dif"].astype("int")
 
     min_tile_id = min(df["tile_ID_origin"].min(), df["tile_ID_destination"].min())
