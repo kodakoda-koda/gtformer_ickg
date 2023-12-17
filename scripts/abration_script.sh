@@ -6,11 +6,8 @@ do
 python main.py --data_type Taxi --use_only $only
 done
 
-S_MODE=("AFT-simple" "AFT-full" "None")
-for s_mode in ${S_MODE[@]}
-do
-python main.py --data_type Taxi --spatial_mode $s_mode
-done
+python main.py --data_type Taxi --spatial_mode "AFT-full" --dtype bf16
+python main.py --data_type Taxi --spatial_mode "AFT-simple"
 
 T_MODE=("BPRE" "None")
 for t_mode in ${T_MODE[@]}
