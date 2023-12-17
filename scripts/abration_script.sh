@@ -6,7 +6,7 @@ do
 python main.py --data_type Taxi --use_only $only
 done
 
-python main.py --data_type Taxi --spatial_mode "AFT-full" --dtype bf16
+python main.py --data_type Taxi --spatial_mode "AFT-full"
 python main.py --data_type Taxi --spatial_mode "AFT-simple"
 
 T_MODE=("BPRE" "None")
