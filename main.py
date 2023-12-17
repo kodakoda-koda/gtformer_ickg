@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--model", type=str, default="GTFormer", help="model name")
     parser.add_argument("--sample_time", type=str, default="60min", help="sample time")
     parser.add_argument("--tile_size", type=str, default=None, help="tile size")
+    parser.add_argument("--dtype", type=str, default="bf16", help="dtype")
 
     parser.add_argument("--itrs", type=int, default=1, help="number of run")
     parser.add_argument("--train_epochs", type=int, default=150, help="epochs")  # 30 GTFormer 150 CrowdNet
@@ -62,6 +63,13 @@ def main():
     else:
         args.num_tiles = 144  # 144
         args.tile_size = "1000m"  # 1000m
+
+    if args.dtype == "bf16":
+        args.dtype = torch.bfloat16
+    elif args.dtype == "fp16":
+        args.dtype = torch.float16
+    else:
+        args.dtype = torch.flaot32
 
     dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
     if not os.path.exists(dataset_directory):
