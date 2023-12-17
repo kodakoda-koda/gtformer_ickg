@@ -13,8 +13,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
         self.value_projection = nn.Linear(d_model, d_model, bias=False)
 
         # Relative Postion Embedding E
-        self.E = nn.Parameter(torch.Tensor(n_head, d_model // n_head, len_))
-        # self.e_projection = nn.Linear(d_model // n_head, len_, bias=False)
+        self.e_projection = nn.Linear(d_model // n_head, len_, bias=False)
 
         self.n_head = n_head
         self.save_attention = save_attention
@@ -30,8 +29,7 @@ class Relative_Temporal_SelfAttention(nn.Module):
         values = self.value_projection(x).view(B, L, H, -1)
 
         # QE
-        # qe = self.e_projection(queries).permute(0, 2, 1, 3)
-        qe = torch.matmul(queries.permute(0, 2, 1, 3), self.E[None, :, :, :])
+        qe = self.e_projection(queries).permute(0, 2, 1, 3)
 
         # Compute S^rel
         m = nn.ReflectionPad2d((0, L - 1, 0, 0))

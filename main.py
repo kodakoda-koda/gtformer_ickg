@@ -40,7 +40,7 @@ def main():
     # GTFormer config
     parser.add_argument("--d_model", type=int, default=64)
     parser.add_argument("--n_head", type=int, default=8)
-    parser.add_argument("--num_blocks", type=int, default=2)
+    parser.add_argument("--num_blocks", type=int, default=1)
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
     parser.add_argument(
         "--spatial_mode", type=str, default="AFT-simple", help='["AFT-KVR", "AFT-full", "AFT-simple", "None"]'
