@@ -18,8 +18,6 @@ class Relative_Temporal_SelfAttention(nn.Module):
         self.n_head = n_head
         self.save_attention = save_attention
 
-        nn.init.xavier_uniform_(self.E)
-
     def forward(self, x):
         B, L, _ = x.shape
         H = self.n_head
