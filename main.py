@@ -10,10 +10,11 @@ from exp.exp_main import Exp_Main
 
 
 def main():
-    fix_seed = 2023
+    fix_seed = 2024
     random.seed(fix_seed)
-    torch.manual_seed(fix_seed)
     np.random.seed(fix_seed)
+    torch.manual_seed(fix_seed)
+    torch.cuda.manual_seed_all(fix_seed)
 
     parser = argparse.ArgumentParser()
 
