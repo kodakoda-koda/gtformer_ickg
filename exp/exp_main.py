@@ -82,14 +82,14 @@ class Exp_Main(Exp_Basic):
             vali_loss = self.vali(vali_loader, param)
 
             my_lr_scheduler.step()
-            print(
-                "Epoch: {}, cost time: {}, Steps: {} | Train Loss: {} Vali Loss: {}".format(
-                    epoch + 1, time.time() - epoch_time, train_steps, train_loss, vali_loss
-                )
-            )
+            # print(
+            #     "Epoch: {}, cost time: {}, Steps: {} | Train Loss: {} Vali Loss: {}".format(
+            #         epoch + 1, time.time() - epoch_time, train_steps, train_loss, vali_loss
+            #     )
+            # )
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
-                print("Early stopping")
+                # print("Early stopping")
                 break
 
         best_model_path = path + "checkpoint.pth"
