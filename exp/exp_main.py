@@ -183,6 +183,8 @@ class Exp_Main(Exp_Basic):
         print("In-Out Flow Prediction")
         print("RMSE Error test: ", io_rmse_test)
         print("MAE Error test: ", io_mae_test)
+        print("")
+        print("")
 
         # Write results
         if not os.path.exists(self.args.save_path):
