@@ -275,7 +275,4 @@ class AFTSimple(nn.Module):
 
         out = out.permute(0, 2, 1, 3).view(B, T, -1)
 
-        if self.save_attention:
-            return out, None
-        else:
-            return out, None
+        return out, None

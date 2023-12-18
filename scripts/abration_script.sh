@@ -1,16 +1,15 @@
 #!/bin/bash
 
-ONLY=("temporal" "spatial" "None")
-for only in ${ONLY[@]}
-do
-python main.py --data_type Taxi --use_only $only
-done
+# base
+python main.py --data_type Taxi
 
-python main.py --data_type Taxi --spatial_mode "AFT-full" --dtype bf16
-python main.py --data_type Taxi --spatial_mode "AFT-simple"
+# use only
+python main.py --data_type Taxi --use_only temporal
+python main.py --data_type Taxi --use_only spatial
 
-T_MODE=("BPRE" "None")
-for t_mode in ${T_MODE[@]}
-do
-python main.py --data_type Taxi --temporal_mode $t_mode
-done
+# spatial mode
+python main.py --data_type Taxi --spatial_mode AFT-full --dtype bf16
+python main.py --data_type Taxi --spatial_mode None --dtype bf16
+
+# temporal mode
+python main.py --data_type Taxi -- temporal_mode None
