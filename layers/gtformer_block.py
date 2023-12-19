@@ -77,10 +77,7 @@ class GTFormer_block(nn.Module):
         if args.use_only != "temporal":
             # Geospatial Transformer Block
             self.spatial_embedding = TokenEmbedding_spatial(args.seq_len + 1, args.d_model)
-
-            if args.spatial_mode == "AFT-KVR":
-                spatial_selfattention = AFTKVR(args.num_tiles, args.d_model, args.n_head, args.save_attention)
-            elif args.spatial_mode == "AFT-full":
+            if args.spatial_mode == "AFT-full":
                 spatial_selfattention = AFTFull(args.num_tiles, args.d_model, args.n_head, args.save_attention)
             elif args.spatial_mode == "AFT-simple":
                 spatial_selfattention = AFTSimple(args.num_tiles, args.d_model, args.n_head, args.save_attention)
@@ -100,52 +97,22 @@ class GTFormer_block(nn.Module):
             self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
 
     def forward(self, X):
-        if self.args.use_only == "temporal":
+        if self.args.use_only != "spatial":
             temp_in = self.temporal_embedding(X)
             temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
-            out = self.temporal_linear(temp_out)
+            temp_out = self.temporal_linear(temp_out)
 
-            return out
-
-        elif self.args.use_only == "spatial":
+        if self.args.use_only != "temporal":
             spat_in = self.spatial_embedding(X.permute(0, 2, 1))
             spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
-            out = self.spatial_linear(spat_out).permute(0, 2, 1)
+            spat_out = self.spatial_linear(spat_out).permute(0, 2, 1)
 
-            return out
+        if self.args.use_only == "temporal":
+            return temp_out
+
+        elif self.args.use_only == "spatial":
+            return spat_out
 
         else:
-            if self.args.connection == "parallel":
-                temp_in = self.temporal_embedding(X)
-                temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
-                temp_out = self.temporal_linear(temp_out)
-
-                spat_in = self.spatial_embedding(X.permute(0, 2, 1))
-                spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
-                spat_out = self.spatial_linear(spat_out)
-
-                out = temp_out + spat_out.permute(0, 2, 1)
-
-                return out, A_temporal, A_spatial
-
-            elif self.args.connection == "series_t":
-                temp_in = self.temporal_embedding(X)
-                temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
-                temp_out = self.temporal_linear(temp_out)
-
-                spat_in = self.spatial_embedding(temp_out.permute(0, 2, 1))
-                spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
-                out = self.spatial_linear(spat_out)
-
-                return out.permute(0, 2, 1), A_temporal, A_spatial
-
-            else:
-                spat_in = self.spatial_embedding(X.permute(0, 2, 1))
-                spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
-                spat_out = self.spatial_linear(spat_out)
-
-                temp_in = self.temporal_embedding(spat_out.permute(0, 2, 1))
-                temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
-                out = self.temporal_linear(temp_out)
-
-                return out, A_temporal, A_spatial
+            out = temp_out + spat_out
+            return out, A_temporal, A_spatial

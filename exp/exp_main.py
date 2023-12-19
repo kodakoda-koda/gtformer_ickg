@@ -6,6 +6,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from torchinfo import summary
 
 from data_provider.create_od_matix import create_od_matrix
 from data_provider.data_loader import data_provider
@@ -28,6 +29,14 @@ class Exp_Main(Exp_Basic):
             "AR": AR,
         }
         model = model_dict[self.args.model].Model(self.args).to(self.args.dtype)
+        print(
+            summary(
+                model,
+                input_size=(16, 11, 55, 55),
+                col_names=["output_size", "num_params"],
+            )
+        )
+        gas
 
         return model
 
@@ -82,14 +91,14 @@ class Exp_Main(Exp_Basic):
             vali_loss = self.vali(vali_loader, param)
 
             my_lr_scheduler.step()
-            # print(
-            #     "Epoch: {}, cost time: {}, Steps: {} | Train Loss: {} Vali Loss: {}".format(
-            #         epoch + 1, time.time() - epoch_time, train_steps, train_loss, vali_loss
-            #     )
-            # )
+            print(
+                "Epoch: {}, cost time: {}, Steps: {} | Train Loss: {} Vali Loss: {}".format(
+                    epoch + 1, time.time() - epoch_time, train_steps, train_loss, vali_loss
+                )
+            )
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
-                # print("Early stopping")
+                print("Early stopping")
                 break
 
         best_model_path = path + "checkpoint.pth"
