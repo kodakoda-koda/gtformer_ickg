@@ -28,14 +28,6 @@ class Exp_Main(Exp_Basic):
             "AR": AR,
         }
         model = model_dict[self.args.model].Model(self.args).to(self.args.dtype)
-        print(
-            summary(
-                model,
-                input_size=(16, 11, 55, 55),
-                col_names=["output_size", "num_params"],
-            )
-        )
-        gas
 
         return model
 
