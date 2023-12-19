@@ -81,10 +81,7 @@ def main():
         f"tile size: {args.tile_size}, num tiles: {args.num_tiles}"
     )
     if args.model == "GTFormer":
-        print(
-            f"temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}, use_only: {args.use_only}, "
-            f"connection: {args.connection}"
-        )
+        print(f"temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}, use_only: {args.use_only}")
 
     Exp = Exp_Main
 
