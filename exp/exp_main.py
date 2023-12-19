@@ -55,7 +55,7 @@ class Exp_Main(Exp_Basic):
             model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
 
         mse_criterion = nn.MSELoss()
-        my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=model_optim, gamma=0.96)
+        # my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=model_optim, gamma=0.96)
 
         for epoch in range(self.args.train_epochs):
             train_loss = []
@@ -81,7 +81,7 @@ class Exp_Main(Exp_Basic):
             train_loss = np.average(train_loss)
             vali_loss = self.vali(vali_loader, param)
 
-            my_lr_scheduler.step()
+            # my_lr_scheduler.step()
             print(
                 "Epoch: {}, cost time: {}, Steps: {} | Train Loss: {} Vali Loss: {}".format(
                     epoch + 1, time.time() - epoch_time, train_steps, train_loss, vali_loss
