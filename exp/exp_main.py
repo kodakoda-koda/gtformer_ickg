@@ -6,7 +6,6 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from torchinfo import summary
 
 from data_provider.create_od_matix import create_od_matrix
 from data_provider.data_loader import data_provider
