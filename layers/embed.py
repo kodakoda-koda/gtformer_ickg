@@ -20,7 +20,7 @@ class PositionalEncoding(nn.Module):
         self.register_buffer("pe", pe)
 
     def forward(self, x):
-        return self.pe[:, : x.size(1)].to(x.dtype)
+        return self.pe[:, : x.size(1)]
 
 
 class TokenEmbedding_temporal(nn.Module):

@@ -4,8 +4,8 @@
 python main.py
 
 # use only
-python main.py --use_only temporal --num_blocks 1
-python main.py --use_only spatial --num_blocks 1
+python main.py --use_only temporal
+python main.py --use_only spatial
 
 # spatial mode
 python main.py --spatial_mode AFT-full

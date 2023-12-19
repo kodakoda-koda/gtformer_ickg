@@ -23,7 +23,7 @@ class Model(nn.Module):
         # D: num destination
         B, L, O, D = X.shape
 
-        X = torch.cat([X, torch.zeros([B, 1, O, D]).to(X.dtype).to(self.device)], dim=1).view(B, L + 1, O * D)
+        X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).view(B, L + 1, O * D)
 
         for block in self.blocks:
             if self.args.use_only in ["temporal", "spatial"]:
