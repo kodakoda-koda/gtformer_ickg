@@ -216,6 +216,15 @@ class Exp_Main(Exp_Basic):
 
         # save predictions and true values
         self.args.save_path = self.args.save_path + f"/{self.args.city}_{self.args.data_type}/{self.args.model}/"
+        if self.args.model == "GTFormer":
+            if self.args.use_only == "temporal":
+                mode = f"{self.args.use_only}_{self.args.temporal_mode}/"
+            elif self.args.use_only == "spatial":
+                mode = f"{self.args.use_only}_{self.args.spatial_mode}/"
+            else:
+                mode = f"{self.args.temporal_mode}_{self.args.spatial_mode}/"
+            self.args.save_path = self.args.save_path + mode
+
         if self.args.save_attention:
             if not os.path.exists(self.args.save_path + f"/{itr}"):
                 os.makedirs(self.args.save_path + f"/{itr}")

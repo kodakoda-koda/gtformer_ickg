@@ -53,7 +53,7 @@ class MyDataset(Dataset):
         return seq_x, seq_y
 
     def __len__(self):
-        return len(self.data)
+        return len(self.data) - self.seq_len - 1
 
 
 def data_provider(flag, args, od_matrix):
