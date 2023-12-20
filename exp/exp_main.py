@@ -216,7 +216,7 @@ class Exp_Main(Exp_Basic):
         results.to_csv(self.args.save_path + "/results.csv", index=False)
 
         # save predictions and true values
-        self.args.save_path = self.args.save_path + f"/{self.args.city}_{self.args.data_type}/{self.args.model}/"
+        save_path = self.args.save_path + f"/{self.args.city}_{self.args.data_type}/{self.args.model}/"
         if self.args.model == "GTFormer":
             if self.args.use_only == "temporal":
                 mode = f"{self.args.use_only}_{self.args.temporal_mode}/"
@@ -224,21 +224,21 @@ class Exp_Main(Exp_Basic):
                 mode = f"{self.args.use_only}_{self.args.spatial_mode}/"
             else:
                 mode = f"{self.args.temporal_mode}_{self.args.spatial_mode}/"
-            self.args.save_path = self.args.save_path + mode
+            save_path = save_path + mode
 
         if self.args.save_attention:
-            if not os.path.exists(self.args.save_path + f"/{itr}"):
-                os.makedirs(self.args.save_path + f"/{itr}")
-            np.save(self.args.save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().float().detach().numpy())
+            if not os.path.exists(save_path + f"/{itr}"):
+                os.makedirs(save_path + f"/{itr}")
+            np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().float().detach().numpy())
             if not self.args.spatial_mode == "AFT-simple":
-                np.save(self.args.save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().float().detach().numpy())
+                np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().float().detach().numpy())
 
         if self.args.save_outputs:
-            if not os.path.exists(self.args.save_path + f"/{itr}"):
-                os.makedirs(self.args.save_path + f"/{itr}")
-            np.save(self.args.save_path + f"/{itr}/" + "trues.npy", trues)
-            np.save(self.args.save_path + f"/{itr}/" + "preds.npy", preds)
-            np.save(self.args.save_path + f"/{itr}/" + "trues_map.npy", trues_map)
-            np.save(self.args.save_path + f"/{itr}/" + "preds_map.npy", preds_map)
+            if not os.path.exists(save_path + f"/{itr}"):
+                os.makedirs(save_path + f"/{itr}")
+            np.save(save_path + f"/{itr}/" + "trues.npy", trues)
+            np.save(save_path + f"/{itr}/" + "preds.npy", preds)
+            np.save(save_path + f"/{itr}/" + "trues_map.npy", trues_map)
+            np.save(save_path + f"/{itr}/" + "preds_map.npy", preds_map)
 
         return
