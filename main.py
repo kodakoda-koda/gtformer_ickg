@@ -25,7 +25,7 @@ def main():
     parser.add_argument("--sample_time", type=str, default="60min", help="sample time")
     parser.add_argument("--tile_size", type=str, default=None, help="tile size")
 
-    parser.add_argument("--itrs", type=int, default=1, help="number of run")
+    parser.add_argument("--itrs", type=int, default=3, help="number of run")
     parser.add_argument("--train_epochs", type=int, default=150, help="epochs")  # 30 GTFormer 150 CrowdNet
     parser.add_argument("--patience", type=int, default=10, help="patience of early stopping")
     parser.add_argument("--batch_size", type=int, default=16, help="batch size")
