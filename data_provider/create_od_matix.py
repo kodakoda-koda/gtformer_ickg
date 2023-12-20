@@ -46,7 +46,7 @@ def create_od_matrix(dataset_directory, args):
     od_matrix = od_matrix[:, ~(od_sum == 0).all(1), :]
     od_matrix = od_matrix[:, :, ~(od_sum == 0).all(1)]
 
-    if args.model == "GTFormer":
+    if args.model == "GTFormer" and args.spatial_mode == "AFT-Full":
         scaler = MinMaxScaler()
         od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
 
@@ -73,7 +73,10 @@ def create_od_matrix(dataset_directory, args):
     empty_indices = [i for i, x in enumerate((od_sum == 0).all(1)) if x]
 
     if args.model == "GTFormer":
-        return od_matrix, min_tile_id, empty_indices, scaler, None
+        if args.spatial_mode == "AFT-full":
+            return od_matrix, min_tile_id, empty_indices, scaler, None
+        else:
+            return od_matrix, min_tile_id, empty_indices, None, None
     elif args.model == "CrowdNet":
         return od_matrix, min_tile_id, empty_indices, None, A_hat
     elif args.model == "GEML":

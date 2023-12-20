@@ -154,7 +154,7 @@ class Exp_Main(Exp_Basic):
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
 
-        if self.args.model == "GTFormer":
+        if self.args.model == "GTFormer" and self.args.spatial_mode == "AFT-full":
             preds = scaler.inverse_transform(preds.reshape(-1, 1)).reshape(preds.shape)
             trues = scaler.inverse_transform(trues.reshape(-1, 1)).reshape(trues.shape)
 

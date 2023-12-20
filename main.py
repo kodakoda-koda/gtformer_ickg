@@ -35,7 +35,7 @@ def main():
     parser.add_argument("--data_type", type=str, default="Bike", help="data type")
     parser.add_argument("--num_tiles", type=int, default=None, help="number of tiles")
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
-    parser.add_argument("--save_outputs", type=bool, default=False, help="save outputs")
+    parser.add_argument("--save_outputs", type=bool, default=True, help="save outputs")
 
     # GTFormer config
     parser.add_argument("--d_model", type=int, default=64)
