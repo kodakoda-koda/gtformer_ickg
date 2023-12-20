@@ -116,7 +116,6 @@ class Exp_Main(Exp_Basic):
                 total_loss.append(loss.item())
 
         total_loss = np.average(total_loss)
-        self.model.train()
         return total_loss
 
     def test(self, itr):
