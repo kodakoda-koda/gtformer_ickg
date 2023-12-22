@@ -22,16 +22,17 @@ class EncoderLayer(nn.Module):
         self.conv2 = nn.Conv1d(in_channels=d_ff, out_channels=d_model, kernel_size=1)
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
-        self.dropout = nn.Dropout(dropout)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
         self.activation = F.relu
 
     def forward(self, x):
         new_x, A = self.attention(x)
-        x = x + self.dropout(new_x)
+        x = x + self.dropout1(new_x)
 
         y = x = self.norm1(x)
-        y = self.dropout(self.activation(self.conv1(y.transpose(-1, 1))))
-        y = self.dropout(self.conv2(y).transpose(-1, 1))
+        y = self.dropout2(self.activation(self.conv1(y.transpose(-1, 1))))
+        y = self.conv2(y).transpose(-1, 1)
 
         return self.norm2(x + y), A
 
@@ -97,20 +98,22 @@ class GTFormer_block(nn.Module):
             self.spatial_transformer_encoder = Encoder(spatial_encoder_layer, spatial_norm)
             self.spatial_linear = nn.Linear(args.d_model, args.seq_len + 1)
 
+        self.dropout = nn.Dropout(args.dropout)
+
     def forward(self, X):
         if self.args.use_only == "temporal":
             temp_in = self.temporal_embedding(X)
             temp_out, A_temporal = self.temporal_transformer_encoder(temp_in)
             out = self.temporal_linear(temp_out)
 
-            return out
+            return self.dropout(out)
 
         elif self.args.use_only == "spatial":
             spat_in = self.spatial_embedding(X.permute(0, 2, 1))
             spat_out, A_spatial = self.spatial_transformer_encoder(spat_in)
             out = self.spatial_linear(spat_out).permute(0, 2, 1)
 
-            return out
+            return self.dropout(out)
 
         else:
             temp_in = self.temporal_embedding(X)
@@ -123,4 +126,4 @@ class GTFormer_block(nn.Module):
 
             out = temp_out + spat_out.permute(0, 2, 1)
 
-            return out, A_temporal, A_spatial
+            return self.dropout(out), A_temporal, A_spatial

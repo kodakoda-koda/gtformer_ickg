@@ -15,6 +15,7 @@ class Model(nn.Module):
         self.blocks = nn.ModuleList([GTFormer_block(args) for _ in range(args.num_blocks)])
 
         self.out_linear = nn.Linear(args.num_tiles**2, args.num_tiles**2)
+        self.relu = nn.ReLU()
 
     def forward(self, X, _):
         # B: batch size
@@ -31,7 +32,7 @@ class Model(nn.Module):
             else:
                 X, A_temporal, A_spatial = block(X)
 
-        out = self.out_linear(X)
+        out = self.relu(self.out_linear(X))
         out = out.view(B, L + 1, O, D)
 
         if self.args.save_attention:
