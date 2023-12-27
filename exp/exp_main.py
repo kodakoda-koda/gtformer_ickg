@@ -232,7 +232,7 @@ class Exp_Main(Exp_Basic):
         if self.args.save_attention:
             if not os.path.exists(save_path + f"/{itr}"):
                 os.makedirs(save_path + f"/{itr}")
-            np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal)
+            np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporals)
             if not self.args.spatial_mode == "AFT-simple":
                 np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().float().detach().numpy())
 

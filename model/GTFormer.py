@@ -25,7 +25,7 @@ class Model(nn.Module):
         B, L, O, D = X.shape
 
         X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).view(B, L + 1, O * D)
-        A_temporals = torch.Tensor()
+        A_temporals = torch.Tensor().to(X.device)
 
         for block in self.blocks:
             if self.args.use_only in ["temporal", "spatial"]:
