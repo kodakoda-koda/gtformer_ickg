@@ -47,7 +47,7 @@ def main():
     parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
 
     args = parser.parse_args()
-    if args.use_only:
+    if args.use_only in ["temporal", "spatial"]:
         args.save_attention = False
 
     if args.city == "NYC":
