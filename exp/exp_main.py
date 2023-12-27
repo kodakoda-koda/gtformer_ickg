@@ -135,6 +135,7 @@ class Exp_Main(Exp_Basic):
 
         preds = []
         trues = []
+        A_temporals = []
 
         self.model.eval()
 
@@ -150,9 +151,11 @@ class Exp_Main(Exp_Basic):
 
                 preds.append(outputs.cpu().float().detach().numpy())
                 trues.append(batch_y.cpu().float().detach().numpy())
+                A_temporals.append(A_temporal.cpu().float().detach().numpy())
 
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
+        A_temporals = np.concatenate(A_temporals, axis=0)
 
         if self.args.model == "GTFormer" and self.args.spatial_mode == "AFT-full":
             preds = scaler.inverse_transform(preds.reshape(-1, 1)).reshape(preds.shape)
@@ -229,7 +232,7 @@ class Exp_Main(Exp_Basic):
         if self.args.save_attention:
             if not os.path.exists(save_path + f"/{itr}"):
                 os.makedirs(save_path + f"/{itr}")
-            np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal.cpu().float().detach().numpy())
+            np.save(save_path + f"/{itr}/" + "A_temporal.npy", A_temporal)
             if not self.args.spatial_mode == "AFT-simple":
                 np.save(save_path + f"/{itr}/" + "A_spatial.npy", A_spatial.cpu().float().detach().numpy())
 
