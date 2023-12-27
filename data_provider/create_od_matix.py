@@ -46,7 +46,7 @@ def create_od_matrix(dataset_directory, args):
     od_matrix = od_matrix[:, ~(od_sum == 0).all(1), :]
     od_matrix = od_matrix[:, :, ~(od_sum == 0).all(1)]
 
-    if args.model == "GTFormer" and args.spatial_mode == "AFT-Full":
+    if args.model == "GTFormer" and args.spatial_mode == "AFT-full":
         scaler = MinMaxScaler()
         od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
 
