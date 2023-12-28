@@ -135,7 +135,8 @@ class Exp_Main(Exp_Basic):
 
         preds = []
         trues = []
-        A_temporals = []
+        if self.args.save_attention:
+            A_temporals = []
 
         self.model.eval()
 
@@ -146,16 +147,17 @@ class Exp_Main(Exp_Basic):
 
                 if self.args.save_attention:
                     outputs, A_temporal, A_spatial = self.model(batch_x, param)
+                    A_temporals.append(A_temporal.cpu().float().detach().numpy())
                 else:
                     outputs = self.model(batch_x, param)
 
                 preds.append(outputs.cpu().float().detach().numpy())
                 trues.append(batch_y.cpu().float().detach().numpy())
-                A_temporals.append(A_temporal.cpu().float().detach().numpy())
 
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
-        A_temporals = np.concatenate(A_temporals, axis=0)
+        if self.args.save_attention:
+            A_temporals = np.concatenate(A_temporals, axis=0)
 
         if self.args.model == "GTFormer" and self.args.spatial_mode == "AFT-full":
             preds = scaler.inverse_transform(preds.reshape(-1, 1)).reshape(preds.shape)
