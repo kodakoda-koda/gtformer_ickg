@@ -1,4 +1,4 @@
-import numpy as np
+import torch
 from torch.utils.data import DataLoader, Dataset
 
 
@@ -6,6 +6,7 @@ class MyDataset(Dataset):
     def __init__(self, flag, args, od_matrix):
         type_map = {"train": 0, "val": 1, "test": 2}
         self.set_type = type_map[flag]
+        self.args = args
 
         self.seq_len = args.seq_len
         day_steps = {"60min": 24, "45min": 32, "30min": 48, "15min": 96}
@@ -41,7 +42,7 @@ class MyDataset(Dataset):
         #         end = sta + self.seq_len + 1
         #         self.data[i * (self.day_step - self.seq_len) + j, :, :, :] = od_matrix_[sta:end]
 
-        self.data = od_matrix[border1:border2]
+        self.data = torch.tensor(od_matrix[border1:border2]).to(self.args.dtype)
 
     def __getitem__(self, index):
         # seq_x = self.data[index, :-1]

@@ -64,8 +64,8 @@ class Exp_Main(Exp_Basic):
             epoch_time = time.time()
             for i, (batch_x, batch_y) in enumerate(train_loader):
                 model_optim.zero_grad()
-                batch_x = batch_x.to(self.args.dtype).to(self.device)
-                batch_y = batch_y.to(self.args.dtype).to(self.device)
+                batch_x = batch_x.to(self.device)
+                batch_y = batch_y.to(self.device)
 
                 if self.args.save_attention:
                     outputs, _, _ = self.model(batch_x, param)
@@ -105,8 +105,8 @@ class Exp_Main(Exp_Basic):
 
         with torch.no_grad():
             for i, (batch_x, batch_y) in enumerate(vali_loader):
-                batch_x = batch_x.to(self.args.dtype).to(self.device)
-                batch_y = batch_y.to(self.args.dtype).to(self.device)
+                batch_x = batch_x.to(self.device)
+                batch_y = batch_y.to(self.device)
 
                 if self.args.save_attention:
                     outputs, _, _ = self.model(batch_x, param)
@@ -142,8 +142,8 @@ class Exp_Main(Exp_Basic):
 
         with torch.no_grad():
             for i, (batch_x, batch_y) in enumerate(test_loader):
-                batch_x = batch_x.to(self.args.dtype).to(self.device)
-                batch_y = batch_y.to(self.args.dtype).to(self.device)
+                batch_x = batch_x.to(self.device)
+                batch_y = batch_y.to(self.device)
 
                 if self.args.save_attention:
                     outputs, A_temporal, A_spatial = self.model(batch_x, param)

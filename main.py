@@ -63,9 +63,9 @@ def main():
         args.tile_size = "1000m"  # 1000m
 
     if args.dtype == "bf16":
-        args.dtype = torch.float
-    else:
         args.dtype = torch.bfloat16
+    else:
+        args.dtype = torch.float
 
     dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
     if not os.path.exists(dataset_directory):
