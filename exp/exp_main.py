@@ -201,6 +201,7 @@ class Exp_Main(Exp_Basic):
         result = {}
         result["city"] = self.args.city
         result["data_type"] = self.args.data_type
+        result["tile_size"] = self.args.tile_size
         result["model"] = self.args.model
         result["itr"] = itr
         if self.args.model == "GTFormer":
