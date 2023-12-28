@@ -56,7 +56,7 @@ def main():
             args.num_tiles = 55  # 150
             args.tile_size = "1000m"  # 500m
         else:
-            args.num_tiles = 99
+            args.num_tiles = 99  # 54
             args.tile_size = "5000m"  # 7500m
     else:
         args.num_tiles = 144  # 144
