@@ -36,6 +36,7 @@ def main():
     parser.add_argument("--num_tiles", type=int, default=None, help="number of tiles")
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
     parser.add_argument("--save_outputs", type=bool, default=False, help="save outputs")
+    parser.add_argument("--dtype", type=str, default="fp32", help="dtype")
 
     # GTFormer config
     parser.add_argument("--d_model", type=int, default=64)
@@ -60,6 +61,11 @@ def main():
     else:
         args.num_tiles = 144  # 144
         args.tile_size = "1000m"  # 1000m
+
+    if args.dtype == "bf16":
+        args.dtype = torch.float
+    else:
+        args.dtype = torch.bfloat16
 
     dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
     if not os.path.exists(dataset_directory):

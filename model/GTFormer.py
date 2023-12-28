@@ -24,10 +24,10 @@ class Model(nn.Module):
         # D: num destination
         B, L, O, D = X.shape
 
-        X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device)], dim=1).view(B, L + 1, O * D)
+        X = torch.cat([X, torch.zeros([B, 1, O, D]).to(self.device).to(X.dtype)], dim=1).view(B, L + 1, O * D)
 
         if self.args.save_attention:
-            A_temporals = torch.Tensor().to(X.device)
+            A_temporals = torch.Tensor().to(X.device).to(X.dtype)
 
         for block in self.blocks:
             if self.args.use_only in ["temporal", "spatial"]:
