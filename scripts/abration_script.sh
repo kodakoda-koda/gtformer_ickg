@@ -13,4 +13,4 @@ python main.py --data_type Taxi --spatial_mode None
 # temporal mode
 python main.py --data_type Taxi --temporal_mode None
 
-python main.py --data_type Taxi --spatial_mode None --tamporal_mode None
+python main.py --data_type Taxi --spatial_mode None --temporal_mode None
