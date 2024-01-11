@@ -59,8 +59,8 @@ def main():
             args.num_tiles = 99  # 54
             args.tile_size = "5000m"  # 7500m
     else:
-        args.num_tiles = 144  # 144
-        args.tile_size = "1000m"  # 1000m
+        args.num_tiles = 144  # 68
+        args.tile_size = "1000m"  # 2000m
 
     if args.dtype == "bf16":
         args.dtype = torch.bfloat16
