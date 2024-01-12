@@ -56,8 +56,6 @@ def create_od_matrix(dataset_directory, args):
         A_hat = get_normalized_adj(A)
 
     elif args.model == "GEML":
-        tessellation = pd.read_csv(dataset_directory + "Tessellation_" + args.tile_size + "_" + args.city + ".csv")
-
         dis_matrix = np.zeros([max_tile_id - min_tile_id, max_tile_id - min_tile_id])
         tessellation["position"] = tessellation["position"].apply(lambda x: ast.literal_eval(x))
         for i in range(min_tile_id, max_tile_id):
