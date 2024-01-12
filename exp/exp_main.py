@@ -10,7 +10,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from data_provider.create_od_matix import create_od_matrix
 from data_provider.data_loader import data_provider
 from exp.exp_basic import Exp_Basic
-from model import AR, GEML, LSTM, CrowdNet, GTFormer
+from model import AR, GEML, HA, LSTM, CrowdNet, GTFormer
 from utils.dataset_utils import get_matrix_mapping, restore_od_matrix, to_2D_map
 from utils.exp_utils import EarlyStopping
 
@@ -26,6 +26,7 @@ class Exp_Main(Exp_Basic):
             "GEML": GEML,
             "LSTM": LSTM,
             "AR": AR,
+            "HA": HA,
         }
         model = model_dict[self.args.model].Model(self.args).to(self.args.dtype)
 
