@@ -1,6 +1,6 @@
-# GTFormer: a Geospatial Temporal Transformer for Crowd Flow Prediction
+# GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction
 
-This repository is the official implementation of GTFormer: a Geospatial Temporal Transformer for Crowd Flow Prediction. 
+This repository is the official implementation of "GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction". 
 
 <div align="center">
 <img src="https://github.com/kodakoda-koda/GTFormer/blob/main/figure/GTFormer.png" width="1000" alt="Figure" title="Architecture of GTFormer">
@@ -17,15 +17,15 @@ pip install -r requirements.txt
 
 ## Experiment
 
-1. Download data from [here](https://drive.google.com/drive/folders/1B9WRpkfHn48VfkaHjnErgQ5yb8Vv6PSj?usp=drive_link) and put into /data/NYC or /data/DC.
+1. Download the data from the following URL and place it in the ./data/DC_Bike, ./data/NYC_Bike and ./data/NYC_Taxi.
 
 
 2. We provide the experiment scripts of all models under the folder ./scripts. You can reproduce the experiment results by:
    ```
-   ./scripts/Main/NYC/GTFormer.sh
-   ./scripts/Main/DC/GTFormer.sh
-   ./scripts/Ablation/Transformer.sh
-   ./scripts/Ablation/Attention.sh
+   ./scripts/NYCBike_script.sh
+   ./scripts/NYCTaxi_script.sh
+   ./scripts/DCBike_script.sh
+   ./scripts/Ablation_script.sh
    ``` 
 
 
@@ -37,9 +37,10 @@ https://github.com/thuml/Autoformer
 
 https://github.com/jonpappalord/crowd_flow_prediction
 
-The dataset is provided by:
+The data is provided by:
 
 https://capitalbikeshare.com/system-data
 
 https://citibikenyc.com/system-data
 
+https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
