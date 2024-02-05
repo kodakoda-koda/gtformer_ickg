@@ -25,7 +25,6 @@ pip install -r requirements.txt
    ./scripts/NYCBike_script.sh
    ./scripts/NYCTaxi_script.sh
    ./scripts/DCBike_script.sh
-   ./scripts/Ablation_script.sh
    ``` 
 
 
