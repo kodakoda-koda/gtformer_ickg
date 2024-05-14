@@ -1,2 +1,7 @@
 .DS_Store
 *df_grouped*.csv
+*/__pycache__*
+logs
+results_data
+checkpoints*
+run.sh
