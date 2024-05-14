@@ -53,7 +53,7 @@ def main():
 
     if args.city == "NYC":
         if args.data_type == "Bike":
-            args.num_tiles = 48  # 150
+            args.num_tiles = 55  # 150
             args.tile_size = "1000m"  # 500m
         else:
             args.num_tiles = 99  # 54
