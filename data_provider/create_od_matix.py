@@ -67,6 +67,11 @@ def create_od_matrix(dataset_directory, args):
         dis_matrix = dis_matrix[~(od_sum == 0).all(1), :]
         dis_matrix = dis_matrix[:, ~(od_sum == 0).all(1)]
 
+    elif args.model == "HSTN":
+        A = od_matrix.sum(0)
+        A[A > 0] = 1
+        A = A + np.eye(A.shape[0])
+
     # For restore ODmatrix
     empty_indices = [i for i, x in enumerate((od_sum == 0).all(1)) if x]
 
@@ -79,5 +84,7 @@ def create_od_matrix(dataset_directory, args):
         return od_matrix, min_tile_id, empty_indices, None, A_hat
     elif args.model == "GEML":
         return od_matrix, min_tile_id, empty_indices, None, dis_matrix
+    elif args.model == "HSTN":
+        return od_matrix, min_tile_id, empty_indices, None, A
     else:
         return od_matrix, min_tile_id, empty_indices, None, None
