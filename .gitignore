@@ -5,3 +5,13 @@ logs
 results_data
 checkpoints*
 run.sh
+layers/bgarn_layers.py
+layers/crowdnet_layers.py
+layers/geml_layers.py
+layers/hstn_layers.py
+model/AR.py
+model/BGARN.py
+model/CrowdNet.py
+model/GEML.py
+model/HSTN.py
+model/LSTM.py
