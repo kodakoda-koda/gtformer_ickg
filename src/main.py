@@ -5,7 +5,6 @@ import random
 import numpy as np
 import torch
 
-from data_provider.read_geodataframe import load_dataset
 from exp.exp_main import Exp_Main
 from utils.exp_utils import set_args
 
