@@ -31,7 +31,7 @@ https://drive.google.com/drive/folders/1Nn1Saq8W0ibIhuXxiJc5PB-PfmjjDLMZ?usp=sha
 3. The results of the scripts will be similar to follow:
 
    |       | Citi Bike | Capital Bike | Yellow Taxi |
-   |:------|----------:|:------------:|:-----------:|
+   |:------|----------:|-------------:|------------:|
    | RMSE  | 0.712     | 0.158        | 2.97        |
    | MAE   | 0.275     | 0.0180       | 0.183       | 
 
