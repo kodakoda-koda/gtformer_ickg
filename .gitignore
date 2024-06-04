@@ -9,3 +9,17 @@
 logs
 results_data
 checkpoints/*
+
+# models
+src/model/AR.py
+src/model/BGARN.py
+src/model/CrowdNet.py
+src/model/HSTN.py
+src/model/LSTM.py
+src/model/GEML.py
+
+# layers
+bgarn_layers.py
+crowdnet_layers.py
+hstn_layers.py
+geml_layers.py
