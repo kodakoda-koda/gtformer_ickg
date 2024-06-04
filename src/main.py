@@ -36,7 +36,7 @@ def main():
     parser.add_argument("--data_type", type=str, default="Bike", help="data type")
     parser.add_argument("--num_tiles", type=int, default=None, help="number of tiles")
     parser.add_argument("--dropout", type=float, default=0.1, help="dropout late")
-    parser.add_argument("--save_outputs", type=bool, default=False, help="save outputs")
+    parser.add_argument("--save_outputs", action="store_true", help="save outputs")
     parser.add_argument("--dtype", type=str, default="fp32", help="dtype")
 
     # GTFormer config
@@ -46,7 +46,7 @@ def main():
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
     parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-full", "AFT-simple", "None"]')
     parser.add_argument("--use_only", type=str, default="None", help='["temporal", "spatial", "None"]')
-    parser.add_argument("--save_attention", type=bool, default=False, help="save attention")
+    parser.add_argument("--save_attention", action="store_true", help="save attention")
 
     args = parser.parse_args()
     args = set_args(args)
