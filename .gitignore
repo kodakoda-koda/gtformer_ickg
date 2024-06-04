@@ -19,7 +19,7 @@ src/model/LSTM.py
 src/model/GEML.py
 
 # layers
-bgarn_layers.py
-crowdnet_layers.py
-hstn_layers.py
-geml_layers.py
+src/layers/bgarn_layers.py
+src/layers/crowdnet_layers.py
+src/layers/hstn_layers.py
+src/layers/geml_layers.py
