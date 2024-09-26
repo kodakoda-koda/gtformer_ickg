@@ -1,9 +1,9 @@
 # GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction
 
-This repository is the official implementation of "GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction". 
+This repository is the official implementation of "GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction. ICKG 2024".
 
 <div align="center">
-<img src="https://github.com/kodakoda-koda/GTFormer_ICDM/blob/main/figure/GTFormer.png" width="1000" alt="Figure" title="Architecture of GTFormer">
+<img src="https://github.com/kodakoda-koda/gtformer_ickg/blob/main/figure/GTFormer.png" width="1000" alt="Figure" title="Architecture of GTFormer">
 </div>
 
 
@@ -19,21 +19,21 @@ pip install -r requirements.txt
 
 1. Download the data from the following URL and place it in the ./data/DC_Bike, ./data/NYC_Bike and ./data/NYC_Taxi.
 
-https://drive.google.com/drive/folders/1Nn1Saq8W0ibIhuXxiJc5PB-PfmjjDLMZ?usp=sharing
+[link](https://drive.google.com/drive/folders/1Nn1Saq8W0ibIhuXxiJc5PB-PfmjjDLMZ?usp=sharing)
 
 2. We provide the experiment scripts of all models under the folder ./scripts. You can reproduce the experiment results by:
    ```
    ./scripts/NYCBike_script.sh
    ./scripts/NYCTaxi_script.sh
    ./scripts/DCBike_script.sh
-   ``` 
+   ```
 
 3. The results of the scripts will be similar to follow:
 
    |       | Citi Bike | Capital Bike | Yellow Taxi |
    |:------|----------:|-------------:|------------:|
    | RMSE  | 0.712     | 0.158        | 2.97        |
-   | MAE   | 0.275     | 0.0180       | 0.183       | 
+   | MAE   | 0.275     | 0.0180       | 0.183       |
 
 
 ## Acknowledgement
