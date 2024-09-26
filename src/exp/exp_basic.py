@@ -10,12 +10,3 @@ class Exp_Basic(object):
     def _build_model(self):
         raise NotImplementedError
         return None
-
-    def vali(self):
-        pass
-
-    def train(self):
-        pass
-
-    def test(self):
-        pass

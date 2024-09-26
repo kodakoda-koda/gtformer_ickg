@@ -43,9 +43,9 @@ def main():
     parser.add_argument("--d_model", type=int, default=64, help="dimension of model")
     parser.add_argument("--n_head", type=int, default=8, help="number of attention head")
     parser.add_argument("--num_blocks", type=int, default=2, help="number of blocks")
-    parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"]')
-    parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-full", "AFT-simple", "None"]')
-    parser.add_argument("--use_only", type=str, default="None", help='["temporal", "spatial", "None"]')
+    parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"], for ablation study')
+    parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-full", "AFT-simple", "None"], for ablation study')
+    parser.add_argument("--use_only", type=str, default="None", help='["temporal", "spatial", "None"], for ablation study')
     parser.add_argument("--save_attention", action="store_true", help="save attention")
 
     args = parser.parse_args()
@@ -59,7 +59,7 @@ def main():
 
     print("Args in experiment:")
     print(
-        f"""model: {args.model}, city: {args.city}, data type: {args.data_type}, 
+        f"""model: {args.model}, city: {args.city}, data type: {args.data_type},
         sample time: {args.sample_time}, tile size: {args.tile_size}, num tiles: {args.num_tiles}"""
     )
     if args.model == "GTFormer":
