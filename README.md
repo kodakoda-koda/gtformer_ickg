@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 1. Download the data from the following URL and place it in the ./data/DC_Bike, ./data/NYC_Bike and ./data/NYC_Taxi.
 
-[link](https://drive.google.com/drive/folders/1Nn1Saq8W0ibIhuXxiJc5PB-PfmjjDLMZ?usp=sharing)
+https://drive.google.com/drive/folders/1e39CxX8w8DCXtl1_PSir6jj33DPelSTl?usp=sharing
 
 2. We provide the experiment scripts of all models under the folder ./scripts. You can reproduce the experiment results by:
    ```
