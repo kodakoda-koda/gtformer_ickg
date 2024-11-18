@@ -86,13 +86,13 @@ class Exp_Main(Exp_Basic):
             my_lr_scheduler.step()
 
             print(
-                "Epoch: {}, cost time: {}, Steps: {} | Train Loss: {} Vali Loss: {}".format(
+                "Epoch: {}, cost time: {:.5f}, Steps: {} | Train Loss: {:.5f} Vali Loss: {:.5f}".format(
                     epoch + 1, time.time() - epoch_time, train_steps, train_loss, vali_loss
                 )
             )
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
-                print("Early stopping")
+                print("Early stopped")
                 break
 
         best_model_path = path + "checkpoint.pth"
@@ -190,34 +190,31 @@ class Exp_Main(Exp_Basic):
         print("In-Out Flow Prediction")
         print("RMSE Error test: ", io_rmse_test)
         print("MAE Error test: ", io_mae_test)
-        print("")
-        print("")
+        print("\n\n")
 
         # Write results
         if not os.path.exists(self.args.save_path):
             os.makedirs(self.args.save_path + "/")
+
         if not os.path.exists(self.args.save_path + "/results.csv"):
             results = pd.DataFrame()
         else:
             results = pd.read_csv(self.args.save_path + "/results.csv")
-        result = {}
-        result["city"] = self.args.city
-        result["data_type"] = self.args.data_type
-        result["tile_size"] = self.args.tile_size
-        result["model"] = self.args.model
-        result["itr"] = itr
-        if self.args.model == "GTFormer":
-            result["temporal_mode"] = self.args.temporal_mode
-            result["spatial_mode"] = self.args.spatial_mode
-            result["use_only"] = self.args.use_only
-        else:
-            result["temporal_mode"] = "-"
-            result["spatial_mode"] = "-"
-            result["use_only"] = "-"
-        result["OD_RMSE"] = od_rmse_test
-        result["OD_MAE"] = od_mae_test
-        result["IO_RMSE"] = io_rmse_test
-        result["IO_MAE"] = io_mae_test
+
+        result = {
+            "city": self.args.city,
+            "data_type": self.args.data_type,
+            "tile_size": self.args.tile_size,
+            "model": self.args.model,
+            "itr": itr,
+            "temporal_mode": self.args.temporal_mode if self.args.model == "GTFormer" else "-",
+            "spatial_mode": self.args.spatial_mode if self.args.model == "GTFormer" else "-",
+            "use_only": self.args.use_only if self.args.model == "GTFormer" else "-",
+            "OD_RMSE": od_rmse_test,
+            "OD_MAE": od_mae_test,
+            "IO_RMSE": io_rmse_test,
+            "IO_MAE": io_mae_test,
+        }
 
         result = pd.DataFrame(result, index=[len(results)])
         results = pd.concat([results, result], axis=0)
