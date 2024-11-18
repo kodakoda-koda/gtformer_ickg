@@ -4,13 +4,10 @@ import torch.nn.functional as F
 
 from layers.embed import TokenEmbedding_spatial, TokenEmbedding_temporal
 from layers.self_attention import (
-    AFTKVR,
-    AFTFull,
-    AFTSimple,
-    KVR_Spatial_SelfAttention,
+    Temporal_SelfAttention,
     Relative_Temporal_SelfAttention,
     Spatial_SelfAttention,
-    Temporal_SelfAttention,
+    AFTSimple,
 )
 
 
