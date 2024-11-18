@@ -35,7 +35,7 @@ class Exp_Main(Exp_Basic):
 
     def train(self):
         dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
-        od_matrix, _, _, _, param = create_od_matrix(dataset_directory, self.args)
+        od_matrix, _, _, param = create_od_matrix(dataset_directory, self.args)
         train_loader = data_provider("train", self.args, od_matrix)
         vali_loader = data_provider("val", self.args, od_matrix)
 
@@ -123,7 +123,7 @@ class Exp_Main(Exp_Basic):
 
     def test(self, itr):
         dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
-        od_matrix, min_tile_id, empty_indices, scaler, param = create_od_matrix(dataset_directory, self.args)
+        od_matrix, min_tile_id, empty_indices, param = create_od_matrix(dataset_directory, self.args)
         test_loader = data_provider("test", self.args, od_matrix)
 
         del od_matrix
@@ -160,10 +160,6 @@ class Exp_Main(Exp_Basic):
         trues = np.concatenate(trues, axis=0)
         if self.args.save_attention:
             A_temporals = np.concatenate(A_temporals, axis=0)
-
-        if self.args.model == "GTFormer" and self.args.spatial_mode == "AFT-full":
-            preds = scaler.inverse_transform(preds.reshape(-1, 1)).reshape(preds.shape)
-            trues = scaler.inverse_transform(trues.reshape(-1, 1)).reshape(trues.shape)
 
         # Error of OD flow
         od_rmse_test = np.sqrt(mean_squared_error(trues.flatten().reshape(-1, 1), preds.flatten().reshape(-1, 1)))

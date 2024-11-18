@@ -46,12 +46,8 @@ def create_od_matrix(dataset_directory, args):
     od_matrix = od_matrix[:, ~(od_sum == 0).all(1), :]
     od_matrix = od_matrix[:, :, ~(od_sum == 0).all(1)]
 
-    if args.model == "GTFormer" and args.spatial_mode == "AFT-full":
-        scaler = MinMaxScaler()
-        od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
-
     # Get adjacency matrix for CrowdNet
-    elif args.model == "CrowdNet":
+    if args.model == "CrowdNet":
         A = od_matrix.sum(0)
         A_hat = get_normalized_adj(A)
 
@@ -77,14 +73,14 @@ def create_od_matrix(dataset_directory, args):
 
     if args.model == "GTFormer":
         if args.spatial_mode == "AFT-full":
-            return od_matrix, min_tile_id, empty_indices, scaler, None
+            return od_matrix, min_tile_id, empty_indices, None
         else:
-            return od_matrix, min_tile_id, empty_indices, None, None
+            return od_matrix, min_tile_id, empty_indices, None
     elif args.model == "CrowdNet":
-        return od_matrix, min_tile_id, empty_indices, None, A_hat
+        return od_matrix, min_tile_id, empty_indices, A_hat
     elif args.model == "GEML":
-        return od_matrix, min_tile_id, empty_indices, None, dis_matrix
+        return od_matrix, min_tile_id, empty_indices, dis_matrix
     elif args.model == "HSTN":
-        return od_matrix, min_tile_id, empty_indices, None, A
+        return od_matrix, min_tile_id, empty_indices, A
     else:
-        return od_matrix, min_tile_id, empty_indices, None, None
+        return od_matrix, min_tile_id, empty_indices, None
