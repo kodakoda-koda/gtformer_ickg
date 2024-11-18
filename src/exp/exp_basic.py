@@ -1,5 +1,7 @@
 import torch
 
+from model import GTFormer
+
 
 class Exp_Basic(object):
     def __init__(self, args):
@@ -8,5 +10,5 @@ class Exp_Basic(object):
         self.model = self._build_model().to(self.device)
 
     def _build_model(self):
-        raise NotImplementedError
-        return None
+        model = GTFormer.Model(self.args).to(self.args.dtype)
+        return model

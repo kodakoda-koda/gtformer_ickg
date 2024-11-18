@@ -17,7 +17,7 @@ class Model(nn.Module):
         self.out_linear = nn.Linear(args.num_tiles**2, args.num_tiles**2)
         self.relu = nn.ReLU()
 
-    def forward(self, X, _):
+    def forward(self, X):
         # B: batch size
         # L: sequence length
         # O: num origin
@@ -43,4 +43,4 @@ class Model(nn.Module):
         if self.args.save_attention:
             return out[:, -1:, :, :], A_temporals, A_spatial
         else:
-            return out[:, -1:, :, :]
+            return out[:, -1:, :, :], None, None

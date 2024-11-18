@@ -6,7 +6,7 @@ import numpy as np
 import torch
 
 from exp.exp_main import Exp_Main
-from utils.exp_utils import set_args
+from utils.main_utils import set_args
 
 
 def main():
@@ -21,7 +21,6 @@ def main():
     # exp config
     parser.add_argument("--path", type=str, default=".", help="current directory")
     parser.add_argument("--save_path", type=str, default="./results_data")
-    parser.add_argument("--model", type=str, default="GTFormer", help="model name")
     parser.add_argument("--sample_time", type=str, default="60min", help="sample time")
     parser.add_argument("--tile_size", type=str, default=None, help="tile size")
 
@@ -44,41 +43,30 @@ def main():
     parser.add_argument("--n_head", type=int, default=8, help="number of attention head")
     parser.add_argument("--num_blocks", type=int, default=2, help="number of blocks")
     parser.add_argument("--temporal_mode", type=str, default="BRPE", help='["BRPE", "None"], for ablation study')
-    parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-full", "AFT-simple", "None"], for ablation study')
+    parser.add_argument("--spatial_mode", type=str, default="AFT-simple", help='["AFT-simple", "None"], for ablation study')
     parser.add_argument("--use_only", type=str, default="None", help='["temporal", "spatial", "None"], for ablation study')
     parser.add_argument("--save_attention", action="store_true", help="save attention")
 
     args = parser.parse_args()
     args = set_args(args)
 
-    dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
-    df_path = dataset_directory + "df_grouped_" + args.tile_size + "_" + args.sample_time + ".csv"
-    assert os.path.exists(
-        df_path
-    ), f"df_grouped_{args.tile_size}_{args.sample_time}.csv does not exist in {dataset_directory}"
-
     print("Args in experiment:")
-    print(
-        f"""model: {args.model}, city: {args.city}, data type: {args.data_type},
-        sample time: {args.sample_time}, tile size: {args.tile_size}, num tiles: {args.num_tiles}"""
-    )
-    if args.model == "GTFormer":
-        print(f"temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}, use_only: {args.use_only}")
+    print(f"model: {args.model}, city: {args.city}, data type: {args.data_type}")
+    print(f"sample time: {args.sample_time}, tile size: {args.tile_size}")
+    print(f"temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}, use_only: {args.use_only}")
 
     Exp = Exp_Main
-
     for itr in range(args.itrs):
         print("\n")
         print("------------------------------------------------------------------------------")
         print("------------------------------------------------------------------------------")
         print(f"itr : {itr+1}")
-
-        exp = Exp(args)  # set experiments
-        print(">>>>>>>start training : >>>>>>>>>>>>>>>>>>>>>>>>>>")
+        exp = Exp(args)
+        print(">>>>>>>start training : <<<<<<<<<<<<<<<<<<<<<<<<<<")
         exp.train()
-
         print(">>>>>>>testing : <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         exp.test(itr)
+        print("\n")
 
         torch.cuda.empty_cache()
 

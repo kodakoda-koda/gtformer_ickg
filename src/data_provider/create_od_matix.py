@@ -35,8 +35,6 @@ def create_od_matrix(dataset_directory, args):
     for row in df.itertuples():
         od_matrix[row.dif, int(row.tile_ID_origin), int(row.tile_ID_destination)] = row.flow
 
-    del df
-
     # The diagonal component is not regarded as flow, so it is set to 0
     for i in range(od_matrix.shape[0]):
         np.fill_diagonal(od_matrix[i, :, :], 0)
@@ -46,45 +44,7 @@ def create_od_matrix(dataset_directory, args):
     od_matrix = od_matrix[:, ~(od_sum == 0).all(1), :]
     od_matrix = od_matrix[:, :, ~(od_sum == 0).all(1)]
 
-    if args.model == "GTFormer" and args.spatial_mode == "AFT-full":
-        scaler = MinMaxScaler()
-        od_matrix = scaler.fit_transform(od_matrix.reshape(-1, 1)).reshape(od_matrix.shape)
-
-    # Get adjacency matrix for CrowdNet
-    elif args.model == "CrowdNet":
-        A = od_matrix.sum(0)
-        A_hat = get_normalized_adj(A)
-
-    elif args.model == "GEML":
-        dis_matrix = np.zeros([max_tile_id - min_tile_id, max_tile_id - min_tile_id])
-        tessellation["position"] = tessellation["position"].apply(lambda x: ast.literal_eval(x))
-        for i in range(min_tile_id, max_tile_id):
-            for j in range(min_tile_id, max_tile_id):
-                i_pos = tessellation["position"][i]
-                j_pos = tessellation["position"][j]
-                dis_matrix[i - min_tile_id, j - min_tile_id] = (i_pos[0] - j_pos[0]) ** 2 + (i_pos[1] - j_pos[1]) ** 2
-
-        dis_matrix = dis_matrix[~(od_sum == 0).all(1), :]
-        dis_matrix = dis_matrix[:, ~(od_sum == 0).all(1)]
-
-    elif args.model == "HSTN":
-        A = od_matrix.sum(0)
-        A[A > 0] = 1
-        A = A + np.eye(A.shape[0])
-
     # For restore ODmatrix
     empty_indices = [i for i, x in enumerate((od_sum == 0).all(1)) if x]
 
-    if args.model == "GTFormer":
-        if args.spatial_mode == "AFT-full":
-            return od_matrix, min_tile_id, empty_indices, scaler, None
-        else:
-            return od_matrix, min_tile_id, empty_indices, None, None
-    elif args.model == "CrowdNet":
-        return od_matrix, min_tile_id, empty_indices, None, A_hat
-    elif args.model == "GEML":
-        return od_matrix, min_tile_id, empty_indices, None, dis_matrix
-    elif args.model == "HSTN":
-        return od_matrix, min_tile_id, empty_indices, None, A
-    else:
-        return od_matrix, min_tile_id, empty_indices, None, None
+    return od_matrix, min_tile_id, empty_indices
