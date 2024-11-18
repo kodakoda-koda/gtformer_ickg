@@ -50,28 +50,18 @@ def main():
     args = parser.parse_args()
     args = set_args(args)
 
-    dataset_directory = os.path.join(args.path + "/data/" + args.city + "_" + args.data_type + "/")
-    df_path = dataset_directory + "df_grouped_" + args.tile_size + "_" + args.sample_time + ".csv"
-    assert os.path.exists(
-        df_path
-    ), f"df_grouped_{args.tile_size}_{args.sample_time}.csv does not exist in {dataset_directory}"
-
     print("Args in experiment:")
-    print(
-        f"""model: {args.model}, city: {args.city}, data type: {args.data_type},
-        sample time: {args.sample_time}, tile size: {args.tile_size}, num tiles: {args.num_tiles}"""
-    )
-    if args.model == "GTFormer":
-        print(f"temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}, use_only: {args.use_only}")
+    print(f"model: {args.model}, city: {args.city}, data type: {args.data_type}")
+    print(f"sample time: {args.sample_time}, tile size: {args.tile_size}")
+    print(f"temporal_mode: {args.temporal_mode}, spatial_mode: {args.spatial_mode}, use_only: {args.use_only}")
 
     Exp = Exp_Main
-
     for itr in range(args.itrs):
         print("\n")
         print("------------------------------------------------------------------------------")
         print("------------------------------------------------------------------------------")
         print(f"itr : {itr+1}")
-        exp = Exp(args)  # set experiments
+        exp = Exp(args)
         print(">>>>>>>start training : <<<<<<<<<<<<<<<<<<<<<<<<<<")
         exp.train()
         print(">>>>>>>testing : <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
