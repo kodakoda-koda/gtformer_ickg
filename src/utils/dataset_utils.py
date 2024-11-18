@@ -72,7 +72,11 @@ def remove_empty_rows(X_dataset):
     return X_new, (~(X_sum == 0).all(1), ~(X_sum.T == 0).all(1))
 
 
-def to_2D_map(actual, predicted, matrix_mapping, min_tile_id, x_max, y_max, args):
+def to_io_map(args, actual, predicted, min_tile_id, empty_indices):
+    matrix_mapping, x_max, y_max = get_matrix_mapping(args)
+    actual = restore_od_matrix(actual, empty_indices)
+    predicted = restore_od_matrix(predicted, empty_indices)
+
     actual_map = od_matrix_to_map(actual, matrix_mapping, min_tile_id, [actual.shape[0], x_max, y_max, 2, 1])
     predicted_map = od_matrix_to_map(predicted, matrix_mapping, min_tile_id, [predicted.shape[0], x_max, y_max, 2, 1])
 

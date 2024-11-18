@@ -6,7 +6,7 @@ import numpy as np
 import torch
 
 from exp.exp_main import Exp_Main
-from utils.exp_utils import set_args
+from utils.main_utils import set_args
 
 
 def main():
@@ -71,13 +71,12 @@ def main():
         print("------------------------------------------------------------------------------")
         print("------------------------------------------------------------------------------")
         print(f"itr : {itr+1}")
-
         exp = Exp(args)  # set experiments
-        print(">>>>>>>start training : >>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(">>>>>>>start training : <<<<<<<<<<<<<<<<<<<<<<<<<<")
         exp.train()
-
         print(">>>>>>>testing : <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         exp.test(itr)
+        print("\n")
 
         torch.cuda.empty_cache()
 

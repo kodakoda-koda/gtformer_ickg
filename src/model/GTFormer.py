@@ -43,4 +43,4 @@ class Model(nn.Module):
         if self.args.save_attention:
             return out[:, -1:, :, :], A_temporals, A_spatial
         else:
-            return out[:, -1:, :, :]
+            return out[:, -1:, :, :], None, None
