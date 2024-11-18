@@ -10,7 +10,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from data_provider.create_od_matix import create_od_matrix
 from data_provider.data_loader import data_provider
 from exp.exp_basic import Exp_Basic
-from model import AR, BGARN, GEML, HSTN, LSTM, CrowdNet, GTFormer
+from model import GTFormer
 from utils.dataset_utils import get_matrix_mapping, restore_od_matrix, to_2D_map
 from utils.exp_utils import EarlyStopping
 
@@ -20,41 +20,24 @@ class Exp_Main(Exp_Basic):
         super(Exp_Main, self).__init__(args)
 
     def _build_model(self):
-        model_dict = {
-            "GTFormer": GTFormer,
-            "CrowdNet": CrowdNet,
-            "BGARN": BGARN,
-            "GEML": GEML,
-            "LSTM": LSTM,
-            "AR": AR,
-            "HSTN": HSTN,
-        }
-        model = model_dict[self.args.model].Model(self.args).to(self.args.dtype)
+        model = GTFormer.Model(self.args).to(self.args.dtype)
 
         return model
 
     def train(self):
         dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
-        od_matrix, _, _, param = create_od_matrix(dataset_directory, self.args)
+        od_matrix, _, _ = create_od_matrix(dataset_directory, self.args)
         train_loader = data_provider("train", self.args, od_matrix)
         vali_loader = data_provider("val", self.args, od_matrix)
 
-        del od_matrix
-
-        if self.args.model in ["CrowdNet", "GEML", "HSTN"]:
-            param = torch.tensor(param).to(self.args.dtype).to(self.device)
-
-        path = os.path.join(self.args.path + f"/checkpoints_{self.args.model}/")
+        path = os.path.join(self.args.path + f"/checkpoints/")
         if not os.path.exists(path):
             os.makedirs(path)
 
         train_steps = len(train_loader)
         early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
 
-        if self.args.model == "CrowdNet":
-            model_optim = torch.optim.RMSprop(self.model.parameters(), lr=self.args.lr, momentum=0.5)
-        else:
-            model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
+        model_optim = torch.optim.Adam(self.model.parameters(), lr=self.args.lr)
 
         mse_criterion = nn.MSELoss()
         my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=model_optim, gamma=0.96)
@@ -70,9 +53,9 @@ class Exp_Main(Exp_Basic):
                 batch_y = batch_y.to(self.device)
 
                 if self.args.save_attention:
-                    outputs, _, _ = self.model(batch_x, param)
+                    outputs, _, _ = self.model(batch_x)
                 else:
-                    outputs = self.model(batch_x, param)
+                    outputs = self.model(batch_x)
 
                 loss = mse_criterion(outputs, batch_y)
                 train_loss.append(loss.item())
@@ -81,7 +64,7 @@ class Exp_Main(Exp_Basic):
                 model_optim.step()
 
             train_loss = np.average(train_loss)
-            vali_loss = self.vali(vali_loader, param)
+            vali_loss = self.vali(vali_loader)
 
             my_lr_scheduler.step()
 
@@ -100,7 +83,7 @@ class Exp_Main(Exp_Basic):
 
         return
 
-    def vali(self, vali_loader, param):
+    def vali(self, vali_loader):
         total_loss = []
         mse_criterion = nn.MSELoss()
         self.model.eval()
@@ -111,9 +94,9 @@ class Exp_Main(Exp_Basic):
                 batch_y = batch_y.to(self.device)
 
                 if self.args.save_attention:
-                    outputs, _, _ = self.model(batch_x, param)
+                    outputs, _, _ = self.model(batch_x)
                 else:
-                    outputs = self.model(batch_x, param)
+                    outputs = self.model(batch_x)
 
                 loss = mse_criterion(outputs, batch_y)
                 total_loss.append(loss.item())
@@ -123,16 +106,11 @@ class Exp_Main(Exp_Basic):
 
     def test(self, itr):
         dataset_directory = os.path.join(self.args.path + "/data/" + self.args.city + "_" + self.args.data_type + "/")
-        od_matrix, min_tile_id, empty_indices, param = create_od_matrix(dataset_directory, self.args)
+        od_matrix, min_tile_id, empty_indices = create_od_matrix(dataset_directory, self.args)
         test_loader = data_provider("test", self.args, od_matrix)
 
-        del od_matrix
-
-        if self.args.model in ["CrowdNet", "GEML", "HSTN"]:
-            param = torch.tensor(param).to(self.args.dtype).to(self.device)
-
         self.model.load_state_dict(
-            torch.load(os.path.join(self.args.path + f"/checkpoints_{self.args.model}/" + "checkpoint.pth"))
+            torch.load(os.path.join(self.args.path + f"/checkpoints/" + "checkpoint.pth"))
         )
 
         preds = []
@@ -148,10 +126,10 @@ class Exp_Main(Exp_Basic):
                 batch_y = batch_y.to(self.device)
 
                 if self.args.save_attention:
-                    outputs, A_temporal, A_spatial = self.model(batch_x, param)
+                    outputs, A_temporal, A_spatial = self.model(batch_x)
                     A_temporals.append(A_temporal.cpu().float().detach().numpy())
                 else:
-                    outputs = self.model(batch_x, param)
+                    outputs = self.model(batch_x)
 
                 preds.append(outputs.cpu().float().detach().numpy())
                 trues.append(batch_y.cpu().float().detach().numpy())
@@ -201,11 +179,10 @@ class Exp_Main(Exp_Basic):
             "city": self.args.city,
             "data_type": self.args.data_type,
             "tile_size": self.args.tile_size,
-            "model": self.args.model,
             "itr": itr,
-            "temporal_mode": self.args.temporal_mode if self.args.model == "GTFormer" else "-",
-            "spatial_mode": self.args.spatial_mode if self.args.model == "GTFormer" else "-",
-            "use_only": self.args.use_only if self.args.model == "GTFormer" else "-",
+            "temporal_mode": self.args.temporal_mode,
+            "spatial_mode": self.args.spatial_mode,
+            "use_only": self.args.use_only,
             "OD_RMSE": od_rmse_test,
             "OD_MAE": od_mae_test,
             "IO_RMSE": io_rmse_test,
@@ -217,15 +194,15 @@ class Exp_Main(Exp_Basic):
         results.to_csv(self.args.save_path + "/results.csv", index=False)
 
         # save predictions and true values
-        save_path = self.args.save_path + f"/{self.args.city}_{self.args.data_type}/{self.args.model}/"
-        if self.args.model == "GTFormer":
-            if self.args.use_only == "temporal":
-                mode = f"{self.args.use_only}_{self.args.temporal_mode}/"
-            elif self.args.use_only == "spatial":
-                mode = f"{self.args.use_only}_{self.args.spatial_mode}/"
-            else:
-                mode = f"{self.args.temporal_mode}_{self.args.spatial_mode}/"
-            save_path = save_path + mode
+        save_path = self.args.save_path + f"/{self.args.city}_{self.args.data_type}/"
+
+        if self.args.use_only == "temporal":
+            mode = f"{self.args.use_only}_{self.args.temporal_mode}/"
+        elif self.args.use_only == "spatial":
+            mode = f"{self.args.use_only}_{self.args.spatial_mode}/"
+        else:
+            mode = f"{self.args.temporal_mode}_{self.args.spatial_mode}/"
+        save_path = save_path + mode
 
         if self.args.save_attention:
             if not os.path.exists(save_path + f"/{itr}"):
