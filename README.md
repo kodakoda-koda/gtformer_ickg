@@ -1,11 +1,11 @@
 # GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction
 
-This repository is the official implementation of "GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction. ICKG 2024".
+<!-- This repository is the official implementation of "GTFormer: A Geospatial Temporal Transformer for Crowd Flow Prediction. ICKG 2024".
 
 <div align="center">
 <img src="https://github.com/kodakoda-koda/gtformer_ickg/blob/main/figure/GTFormer.png" width="1000" alt="Figure" title="Architecture of GTFormer">
 </div>
-
+ -->
 
 ## Requirements
 
